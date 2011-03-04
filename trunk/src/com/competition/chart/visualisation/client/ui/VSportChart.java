@@ -93,6 +93,9 @@ public class VSportChart extends Widget implements Paintable {
         }
     }
 
+    int leftGroups;
+    int rightGroups;
+
     private void buildChart() {
         for (int i = getElement().getChildCount(); i > 0; i--) {
             getElement().removeChild(getElement().getChild(i - 1));
@@ -102,6 +105,9 @@ public class VSportChart extends Widget implements Paintable {
 
         Element leftGroup = DOM.createDiv();
         leftGroup.setClassName("float_left");
+        
+        getElement().appendChild(leftGroup);
+        
         Element winner = DOM.createDiv();
         winner.setClassName("float_left");
         Element rightGroup = DOM.createDiv();
@@ -188,6 +194,35 @@ public class VSportChart extends Widget implements Paintable {
                 right += g.getNames().size() * 20 + 20;
             }
             half--;
+            if (half == 0) {
+                // Draw Left Tier 2
+                int leftGroups = (int) Math.ceil(groups.size() / 2.0);
+                if (leftGroups > 1) {
+                    Element top = DOM.createDiv();
+                    top.getStyle().setHeight(
+                            10 + groups.get(0).getNames().size() * 10, Unit.PX);
+                    top.getStyle().setTop(
+                            20 + groups.get(0).getNames().size() * 10
+                                    - groups.get(0).getNames().size(), Unit.PX);
+                    top.addClassName("connect");
+                    top.addClassName("left");
+                    top.addClassName("top");
+
+                    Element bottom = DOM.createDiv();
+                    bottom.getStyle().setHeight(
+                            10 + groups.get(0).getNames().size() * 10, Unit.PX);
+                    bottom.getStyle().setTop(
+                            20 + groups.get(0).getNames().size() * 10
+                                    - groups.get(0).getNames().size(), Unit.PX);
+                    bottom.addClassName("connect");
+                    bottom.addClassName("left");
+                    Element wrapper = DOM.createDiv();
+                    wrapper.appendChild(top);
+                    wrapper.appendChild(bottom);
+                    wrapper.setClassName("float_left");
+                    getElement().appendChild(wrapper);
+                }
+            }
         }
 
         if (left > right) {
@@ -195,12 +230,7 @@ public class VSportChart extends Widget implements Paintable {
         }
         winner.getStyle().setPaddingTop(left / 2, Unit.PX);
 
-        getElement().appendChild(leftGroup);
         getElement().appendChild(winner);
         getElement().appendChild(rightGroup);
-    }
-
-    private void addPersonToGroup(VPerson person, Element group, int half,
-            boolean first) {
     }
 }
