@@ -14,19 +14,24 @@ import com.vaadin.ui.AbstractComponent;
 @com.vaadin.ui.ClientWidget(com.competition.chart.visualisation.client.ui.VSportChart.class)
 public class SportChart extends AbstractComponent {
 
-    Map<Integer, List<String>> data = new HashMap<Integer, List<String>>();
+    Map<String, List<String>> data = new HashMap<String, List<String>>();
 
-    public SportChart(Map<Integer, List<String>> data) {
-        this.data = data;
+    public SportChart() {
+    }
+
+    public void addGroup(int groupNumber, String groupName, int groupTier,
+            List<String> participants) {
+        String id = groupNumber + "_" + groupName + "_" + groupTier;
+        data.put(id, participants);
     }
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
 
-        Map<Integer, String> mmap = new HashMap<Integer, String>();
-        for (int i = 1; i <= data.size(); i++) {
-            List<String> names = data.get(i);
+        Map<String, String> mmap = new HashMap<String, String>();
+        for (String key : data.keySet()) {
+            List<String> names = data.get(key);
             StringBuilder values = new StringBuilder();
 
             for (String value : names) {
@@ -34,7 +39,7 @@ public class SportChart extends AbstractComponent {
                 values.append(";");
             }
 
-            mmap.put(i, values.toString());
+            mmap.put(key, values.toString());
         }
 
         if (mmap.size() > 0) {

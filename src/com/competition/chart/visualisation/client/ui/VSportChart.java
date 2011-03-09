@@ -1,12 +1,15 @@
 package com.competition.chart.visualisation.client.ui;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.competition.chart.visualisation.client.ui.canvas.client.Canvas;
 import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
@@ -24,10 +27,13 @@ public class VSportChart extends Widget implements Paintable {
     /** Reference to the server connection object. */
     ApplicationConnection client;
 
+    private Integer pixelWidth = null;
+
+    private AbsolutePanel displayPanel;
+    private Canvas canvas;
+
     private List<VGroup> groups = new LinkedList<VGroup>();
     private String winner = null;
-
-    private int tiers = 0;
 
     /**
      * The constructor should first call super() to initialize the component and
@@ -43,6 +49,15 @@ public class VSportChart extends Widget implements Paintable {
         // This method call of the Paintable interface sets the component
         // style name in DOM tree
         setStyleName(CLASSNAME);
+        displayPanel = new AbsolutePanel();
+        getElement().appendChild(displayPanel.getElement());
+        DOM.setStyleAttribute(displayPanel.getElement(), "position", "relative");
+        DOM.setStyleAttribute(displayPanel.getElement(), "zIndex", "9000");
+
+        canvas = new Canvas(100, 100);
+        displayPanel.add(canvas, 0, 0);
+        setCanvasWidth(700);
+        setCanvasHeight(500);
     }
 
     /**
@@ -83,154 +98,168 @@ public class VSportChart extends Widget implements Paintable {
                 }
                 groups.add(group);
             }
+            Collections.sort(groups, new Comparator<VGroup>() {
+                public int compare(VGroup o1, VGroup o2) {
+                    return o1.getNumber() == o2.getNumber() ? 0 : o1
+                            .getNumber() < o2.getNumber() ? -1 : 1;
+                }
+            });
         }
 
         if (!groups.isEmpty()) {
-            buildChart();
+            // buildChart();
+            drawChart();
         }
         if (uidl.hasAttribute("winner")) {
             winner = uidl.getStringAttribute("winner");
         }
     }
 
-    int leftGroups;
-    int rightGroups;
+    List<HTML> names = new LinkedList<HTML>();
 
-    private void buildChart() {
-        for (int i = getElement().getChildCount(); i > 0; i--) {
-            getElement().removeChild(getElement().getChild(i - 1));
+    private void drawChart() {
+        for (HTML name : names) {
+            displayPanel.remove(name);
         }
+        names.clear();
 
-        int half = (int) Math.ceil(groups.size() / 2.0);
+        canvas.clear();
 
-        Element leftGroup = DOM.createDiv();
-        leftGroup.setClassName("float_left");
-        
-        getElement().appendChild(leftGroup);
-        
-        Element winner = DOM.createDiv();
-        winner.setClassName("float_left");
-        Element rightGroup = DOM.createDiv();
-        rightGroup.setClassName("float_left");
+        int groupsOnLeft = (groups.size() / 2) + groups.size() % 2;
+        int groupsOnRight = groups.size() - groupsOnLeft;
 
-        Element winnername = DOM.createDiv();
-        winnername.setClassName("competition");
-        winnername.addClassName("top");
-        if (this.winner != null) {
-            winnername.setInnerHTML(this.winner);
-        }
-        winner.appendChild(winnername);
+        canvas.setStrokeStyle("rgb(0,0,0)");
+        canvas.setLineWidth(1);
+        canvas.beginPath();
 
-        int left, right;
-        left = right = 0;
+        int group = 0;
+        int offsetLeft = 15;
+        int offsetTop = 15;
+        for (int j = 0; j < groups.size(); j++) {
+            VGroup g = groups.get(j);
+            HTML name = new HTML(g.getName());
+            displayPanel.add(name, offsetLeft + 10, offsetTop + 5);
+            names.add(name);
 
-        for (VGroup g : groups) {
-            double groupHeight = g.getNames().size() * 20 + 20;
+            int groupOffset = offsetTop;
 
-            Element group = DOM.createDiv();
-            group.setInnerHTML(g.getName());
-            group.getStyle().setHeight(groupHeight, Unit.PX);
+            offsetTop += 20;
 
-            Element persons = DOM.createDiv();
-            Element connects = DOM.createDiv();
-            connects.setClassName("float_" + (half > 0 ? "left" : "right"));
-            persons.setClassName("float_" + (half > 0 ? "left" : "right"));
+            int middleOfGroup = offsetTop + (g.getNames().size() * 20) / 2;
+            canvas.moveTo(offsetLeft, offsetTop);
+            for (int i = 0; i < g.getNames().size(); i++) {
+                VPerson p = g.getNames().get(i);
 
-            Element lastConnect = null;
-            int groupSize = g.getNames().size();
-            for (int i = 0; i < groupSize; i++) {
-                VPerson person = g.getNames().get(i);
-                Element name = DOM.createDiv();
-                name.setClassName("competition");
-                name.setInnerHTML(person.getName());
-                Element connect = DOM.createDiv();
-                if (person.hasAdvanced) {
-                    connect.setClassName("advanced");
-                } else {
-                    connect.setClassName("connect");
+                name = new HTML(p.getName());
+                displayPanel.add(name, offsetLeft + 10, offsetTop + 5);
+                names.add(name);
+
+                canvas.rect(offsetLeft, offsetTop, 100, 20);
+
+                if (p.hasAdvanced) {
+                    canvas.closePath();
+                    canvas.stroke();
+                    canvas.setStrokeStyle("rgb(10,255,0)");
+                    canvas.beginPath();
                 }
-                if (half > 0) {
-                    connect.addClassName("left");
-                } else {
-                    connect.addClassName("right");
-                    // name.addClassName("right");
-                }
-                if (i == 0) {
-                    name.addClassName("first");
-                    connect.addClassName("top");
-                }
+                canvas.moveTo(offsetLeft + 100, offsetTop + 10);
+                canvas.lineTo(offsetLeft + 110, offsetTop + 10);
 
-                if (i > 0 && i < groupSize - 1) {
-                    if (person.hasAdvanced) {
-                        connect.setClassName("advanced-middle");
-                    } else {
-                        connect.setClassName("connect-middle");
-                    }
-                    if (half > 0) {
-                        connect.addClassName("left");
-                    } else {
-                        connect.addClassName("right");
-                    }
-                    lastConnect.getStyle().setHeight(20, Unit.PX);
-                }
-                lastConnect = connect;
-                if (i == groupSize - 1 && groupSize > 2) {
-                    connect.getStyle().setHeight(20, Unit.PX);
-                }
-                persons.appendChild(name);
-                connects.appendChild(connect);
+                canvas.lineTo(offsetLeft + 110, middleOfGroup);
+
+                canvas.moveTo(offsetLeft, offsetTop);
+                canvas.closePath();
+                canvas.stroke();
+                canvas.setStrokeStyle("rgb(0,0,0)");
+                canvas.beginPath();
+
+                offsetTop += 20;
             }
 
-            Element wrap = DOM.createDiv();
-            wrap.appendChild(persons);
-            wrap.appendChild(connects);
-            group.appendChild(wrap);
-            if (half > 0) {
-                leftGroup.appendChild(group);
-                left += g.getNames().size() * 20 + 20;
+            /* next tier */
+            if (hasAdvance(g.getNames())) {
+                canvas.closePath();
+                canvas.stroke();
+                canvas.setStrokeStyle("rgb(10,255,0)");
+                canvas.beginPath();
+            }
+            canvas.moveTo(offsetLeft + 110, middleOfGroup);
+            canvas.lineTo(offsetLeft + 120, middleOfGroup);
+
+            if ((j + 1) % 2 == 0) {
+                canvas.lineTo(offsetLeft + 120, groupOffset + 10);
+            } else if (j != groups.size() - 1) {
+                canvas.lineTo(offsetLeft + 120, middleOfGroup
+                        + (middleOfGroup - groupOffset - 10));
+            }
+
+            canvas.moveTo(offsetLeft, offsetTop);
+            canvas.closePath();
+            canvas.stroke();
+            canvas.setStrokeStyle("rgb(0,0,0)");
+            canvas.beginPath();
+
+            group++;
+            if (group < groupsOnLeft) {
+
             } else {
-                group.addClassName("right");
-                rightGroup.appendChild(group);
-                right += g.getNames().size() * 20 + 20;
-            }
-            half--;
-            if (half == 0) {
-                // Draw Left Tier 2
-                int leftGroups = (int) Math.ceil(groups.size() / 2.0);
-                if (leftGroups > 1) {
-                    Element top = DOM.createDiv();
-                    top.getStyle().setHeight(
-                            10 + groups.get(0).getNames().size() * 10, Unit.PX);
-                    top.getStyle().setTop(
-                            20 + groups.get(0).getNames().size() * 10
-                                    - groups.get(0).getNames().size(), Unit.PX);
-                    top.addClassName("connect");
-                    top.addClassName("left");
-                    top.addClassName("top");
-
-                    Element bottom = DOM.createDiv();
-                    bottom.getStyle().setHeight(
-                            10 + groups.get(0).getNames().size() * 10, Unit.PX);
-                    bottom.getStyle().setTop(
-                            20 + groups.get(0).getNames().size() * 10
-                                    - groups.get(0).getNames().size(), Unit.PX);
-                    bottom.addClassName("connect");
-                    bottom.addClassName("left");
-                    Element wrapper = DOM.createDiv();
-                    wrapper.appendChild(top);
-                    wrapper.appendChild(bottom);
-                    wrapper.setClassName("float_left");
-                    getElement().appendChild(wrapper);
-                }
+                offsetLeft += 300;
+                offsetTop = 15;
             }
         }
+        canvas.moveTo(0, 0);
 
-        if (left > right) {
-            rightGroup.getStyle().setPaddingTop((left - right) / 2, Unit.PX);
+        canvas.closePath();
+        canvas.stroke();
+    }
+
+    private boolean hasAdvance(List<VPerson> persons) {
+        for (VPerson p : persons) {
+            if (p.hasAdvanced) {
+                return true;
+            }
         }
-        winner.getStyle().setPaddingTop(left / 2, Unit.PX);
+        return false;
+    }
 
-        getElement().appendChild(winner);
-        getElement().appendChild(rightGroup);
+    /**
+     * Sets the canvas width
+     * 
+     * @param width
+     *            The width in pixels
+     */
+    public void setCanvasWidth(int width) {
+        canvas.setWidth(width);
+        displayPanel.setWidth(width + "px");
+    }
+
+    /**
+     * Setst the canvas height
+     * 
+     * @param height
+     *            The height in pixels
+     */
+    public void setCanvasHeight(int height) {
+        canvas.setHeight(height);
+        displayPanel.setHeight(height + "px");
+    }
+
+    public int getWidgetWidth() {
+        if (pixelWidth != null) {
+            return pixelWidth;
+        }
+        try {
+            int width = Integer.parseInt(DOM
+                    .getAttribute(getElement(), "width").replaceAll("px", ""));
+            return width;
+        } catch (Exception e) {
+            try {
+                int width = Integer.parseInt(DOM.getStyleAttribute(
+                        getElement(), "width").replaceAll("px", ""));
+                return width;
+            } catch (Exception f) {
+                return getOffsetWidth();
+            }
+        }
     }
 }
