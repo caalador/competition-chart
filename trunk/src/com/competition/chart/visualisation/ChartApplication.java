@@ -1,9 +1,7 @@
 package com.competition.chart.visualisation;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import com.vaadin.Application;
 import com.vaadin.ui.Window;
@@ -16,6 +14,7 @@ public class ChartApplication extends Application {
         List<String> group1 = new LinkedList<String>();
         group1.add("J. Kulmala_advance");
         group1.add("W. Lindberg");
+
         List<String> group2 = new LinkedList<String>();
         group2.add("J. Lehtinen");
         group2.add("O. Nieminen");
@@ -24,12 +23,12 @@ public class ChartApplication extends Application {
         group3.add("T. Lindros");
         group3.add("S. Liipo");
 
-        Map<Integer, List<String>> map = new HashMap<Integer, List<String>>();
-        map.put(1, group1);
-        map.put(2, group2);
-        map.put(3, group3);
+        SportChart chart1 = new SportChart();
+        chart1.addGroup(1, "A sarja", 0, group1);
+        chart1.addGroup(2, "B sarja", 0, group2);
+        chart1.addGroup(3, "C sarja", 0, group3);
 
-        mainWindow.addComponent(new SportChart(map));
+        mainWindow.addComponent(chart1);
 
         group1 = new LinkedList<String>();
         group1.add("J. Kulmala_advance");
@@ -41,11 +40,11 @@ public class ChartApplication extends Application {
         group2.add("O. Nieminen");
         group2.add("S. Liipo");
 
-        map = new HashMap<Integer, List<String>>();
-        map.put(1, group1);
-        map.put(2, group2);
+        SportChart chart2 = new SportChart();
+        chart2.addGroup(1, "name 1", 0, group1);
+        chart2.addGroup(2, "name second", 0, group2);
 
-        mainWindow.addComponent(new SportChart(map));
+        mainWindow.addComponent(chart2);
 
         setMainWindow(mainWindow);
     }
