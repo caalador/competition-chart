@@ -34,6 +34,7 @@ public class VSportChart extends Widget implements Paintable {
 
     private List<VGroup> groups = new LinkedList<VGroup>();
     private String winner = null;
+    private int onLeft, onRight;
 
     /**
      * The constructor should first call super() to initialize the component and
@@ -107,7 +108,7 @@ public class VSportChart extends Widget implements Paintable {
         }
 
         if (!groups.isEmpty()) {
-            // buildChart();
+            buildGroups();
             drawChart();
         }
         if (uidl.hasAttribute("winner")) {
@@ -115,7 +116,39 @@ public class VSportChart extends Widget implements Paintable {
         }
     }
 
+    private void buildGroups() {
+        int nextID = groups.get(groups.size() - 1).getNumber() + 1;
+        onLeft = groups.size() / 2 + groups.size() % 2;
+        onRight = groups.size() - onLeft;
+        int n = onLeft;
+        int tier = 1;
+        while (n > 1) {
+            n = n / 2 + n % 2;
+            for (int i = 0; i < n; i++) {
+                groups.add(new VGroup(nextID + "_ _" + tier));
+                nextID++;
+            }
+            tier++;
+        }
+        groups.add(new VGroup(nextID + "_ _" + tier));
+        nextID++;
+        n = onRight;
+        tier = 1;
+        while (n > 1) {
+            n = n / 2 + n % 2;
+            for (int i = 0; i < n; i++) {
+                groups.add(new VGroup(nextID + "_ _" + tier));
+                nextID++;
+            }
+            tier++;
+        }
+        groups.add(new VGroup(nextID + "_ _" + tier));
+        nextID++;
+    }
+
     List<HTML> names = new LinkedList<HTML>();
+    int offsetLeft = 15;
+    int offsetTop = 15;
 
     private void drawChart() {
         for (HTML name : names) {
@@ -125,73 +158,123 @@ public class VSportChart extends Widget implements Paintable {
 
         canvas.clear();
 
-        int groupsOnLeft = (groups.size() / 2) + groups.size() % 2;
-        int groupsOnRight = groups.size() - groupsOnLeft;
+        offsetLeft = 15;
+        offsetTop = 15;
+        for (int j = 0; j < groups.size(); j++) {
+            VGroup g = groups.get(j);
+            if (j < onLeft) {
+                drawLeft(g, j);
+            }
+            // HTML name = new HTML(g.getName());
+            // displayPanel.add(name, offsetLeft + 10, offsetTop + 5);
+            // names.add(name);
+            //
+            // int groupOffset = offsetTop;
+            //
+            // offsetTop += 20;
+            //
+            // int middleOfGroup = offsetTop + (g.getNames().size() * 20) / 2;
+            // canvas.moveTo(offsetLeft, offsetTop);
+            // for (int i = 0; i < g.getNames().size(); i++) {
+            // VPerson p = g.getNames().get(i);
+            //
+            // name = new HTML(p.getName());
+            // displayPanel.add(name, offsetLeft + 10, offsetTop + 5);
+            // names.add(name);
+            //
+            // canvas.rect(offsetLeft, offsetTop, 100, 20);
+            //
+            // if (p.hasAdvanced) {
+            // canvas.closePath();
+            // canvas.stroke();
+            // canvas.setStrokeStyle("rgb(10,255,0)");
+            // canvas.beginPath();
+            // }
+            // canvas.moveTo(offsetLeft + 100, offsetTop + 10);
+            // canvas.lineTo(offsetLeft + 110, offsetTop + 10);
+            //
+            // canvas.lineTo(offsetLeft + 110, middleOfGroup);
+            //
+            // canvas.moveTo(offsetLeft, offsetTop);
+            // canvas.closePath();
+            // canvas.stroke();
+            // canvas.setStrokeStyle("rgb(0,0,0)");
+            // canvas.beginPath();
+            //
+            // offsetTop += 20;
+            // }
+            //
+            // /* next tier */
+            // if (hasAdvance(g.getNames())) {
+            // canvas.closePath();
+            // canvas.stroke();
+            // canvas.setStrokeStyle("rgb(10,255,0)");
+            // canvas.beginPath();
+            // }
+            // canvas.moveTo(offsetLeft + 110, middleOfGroup);
+            // canvas.lineTo(offsetLeft + 120, middleOfGroup);
+            //
+            // if ((j + 1) % 2 == 0) {
+            // canvas.lineTo(offsetLeft + 120, groupOffset + 10);
+            // } else if (j != groups.size() - 1) {
+            // canvas.lineTo(offsetLeft + 120, middleOfGroup
+            // + (middleOfGroup - groupOffset - 10));
+            // }
+            //
+            // canvas.moveTo(offsetLeft, offsetTop);
+            // canvas.closePath();
+            // canvas.stroke();
+            // canvas.setStrokeStyle("rgb(0,0,0)");
+            // canvas.beginPath();
+            //
+            // group++;
+            // if (group < onLeft) {
+            //
+            // } else {
+            // offsetLeft += 300;
+            // offsetTop = 15;
+            // }
+        }
+        // canvas.moveTo(0, 0);
+        //
+        // canvas.closePath();
+        // canvas.stroke();
+    }
 
+    private void drawLeft(VGroup g, int j) {
         canvas.setStrokeStyle("rgb(0,0,0)");
         canvas.setLineWidth(1);
         canvas.beginPath();
 
-        int group = 0;
-        int offsetLeft = 15;
-        int offsetTop = 15;
-        for (int j = 0; j < groups.size(); j++) {
-            VGroup g = groups.get(j);
-            HTML name = new HTML(g.getName());
+        HTML name = new HTML(g.getName());
+        displayPanel.add(name, offsetLeft + 10, offsetTop + 5);
+        names.add(name);
+
+        int groupOffset = offsetTop;
+
+        offsetTop += 20;
+
+        int middleOfGroup = offsetTop + (g.getNames().size() * 20) / 2;
+        canvas.moveTo(offsetLeft, offsetTop);
+        for (int i = 0; i < g.getNames().size(); i++) {
+            VPerson p = g.getNames().get(i);
+
+            name = new HTML(p.getName());
             displayPanel.add(name, offsetLeft + 10, offsetTop + 5);
             names.add(name);
 
-            int groupOffset = offsetTop;
+            canvas.rect(offsetLeft, offsetTop, 100, 20);
 
-            offsetTop += 20;
-
-            int middleOfGroup = offsetTop + (g.getNames().size() * 20) / 2;
-            canvas.moveTo(offsetLeft, offsetTop);
-            for (int i = 0; i < g.getNames().size(); i++) {
-                VPerson p = g.getNames().get(i);
-
-                name = new HTML(p.getName());
-                displayPanel.add(name, offsetLeft + 10, offsetTop + 5);
-                names.add(name);
-
-                canvas.rect(offsetLeft, offsetTop, 100, 20);
-
-                if (p.hasAdvanced) {
-                    canvas.closePath();
-                    canvas.stroke();
-                    canvas.setStrokeStyle("rgb(10,255,0)");
-                    canvas.beginPath();
-                }
-                canvas.moveTo(offsetLeft + 100, offsetTop + 10);
-                canvas.lineTo(offsetLeft + 110, offsetTop + 10);
-
-                canvas.lineTo(offsetLeft + 110, middleOfGroup);
-
-                canvas.moveTo(offsetLeft, offsetTop);
-                canvas.closePath();
-                canvas.stroke();
-                canvas.setStrokeStyle("rgb(0,0,0)");
-                canvas.beginPath();
-
-                offsetTop += 20;
-            }
-
-            /* next tier */
-            if (hasAdvance(g.getNames())) {
+            if (p.hasAdvanced) {
                 canvas.closePath();
                 canvas.stroke();
                 canvas.setStrokeStyle("rgb(10,255,0)");
                 canvas.beginPath();
             }
-            canvas.moveTo(offsetLeft + 110, middleOfGroup);
-            canvas.lineTo(offsetLeft + 120, middleOfGroup);
+            canvas.moveTo(offsetLeft + 100, offsetTop + 10);
+            canvas.lineTo(offsetLeft + 110, offsetTop + 10);
 
-            if ((j + 1) % 2 == 0) {
-                canvas.lineTo(offsetLeft + 120, groupOffset + 10);
-            } else if (j != groups.size() - 1) {
-                canvas.lineTo(offsetLeft + 120, middleOfGroup
-                        + (middleOfGroup - groupOffset - 10));
-            }
+            canvas.lineTo(offsetLeft + 110, middleOfGroup);
 
             canvas.moveTo(offsetLeft, offsetTop);
             canvas.closePath();
@@ -199,16 +282,28 @@ public class VSportChart extends Widget implements Paintable {
             canvas.setStrokeStyle("rgb(0,0,0)");
             canvas.beginPath();
 
-            group++;
-            if (group < groupsOnLeft) {
-
-            } else {
-                offsetLeft += 300;
-                offsetTop = 15;
-            }
+            offsetTop += 20;
         }
-        canvas.moveTo(0, 0);
 
+        /* next tier */
+        if (hasAdvance(g.getNames())) {
+            canvas.closePath();
+            canvas.stroke();
+            canvas.setStrokeStyle("rgb(10,255,0)");
+            canvas.beginPath();
+        }
+        canvas.moveTo(offsetLeft + 110, middleOfGroup);
+        canvas.lineTo(offsetLeft + 120, middleOfGroup);
+
+        // line goes up
+        if ((j + 1) % 2 == 0) {
+            canvas.lineTo(offsetLeft + 120, groupOffset + 10);
+        } else if (j != groups.size() - 1 && g.getNumber() != onLeft) {
+            canvas.lineTo(offsetLeft + 120, middleOfGroup
+                    + (middleOfGroup - groupOffset - 10));
+        }
+
+        canvas.moveTo(0, 0);
         canvas.closePath();
         canvas.stroke();
     }
