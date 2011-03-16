@@ -8,6 +8,7 @@ public class VGroup {
     private int number;
     private int tier;
     private List<VPerson> names = new LinkedList<VPerson>();
+    private VGroup childGroup = null;
 
     public VGroup(String id) {
         String[] idString = id.split("_");
@@ -46,5 +47,13 @@ public class VGroup {
 
     public List<VPerson> getNames() {
         return names;
+    }
+
+    public void setChildGroup(VGroup child) {
+        childGroup = child;
+    }
+
+    public VGroup getChildGroup() {
+        return childGroup;
     }
 }
