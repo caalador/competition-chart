@@ -9,6 +9,7 @@ public class VGroup {
     private int tier;
     private List<VPerson> names = new LinkedList<VPerson>();
     private VGroup childGroup = null;
+    private List<VGroup> parents = new LinkedList<VGroup>();
 
     public VGroup(String id) {
         String[] idString = id.split("_");
@@ -55,5 +56,13 @@ public class VGroup {
 
     public VGroup getChildGroup() {
         return childGroup;
+    }
+
+    public void addParent(VGroup parent) {
+        parents.add(parent);
+    }
+
+    public List<VGroup> getParents() {
+        return parents;
     }
 }
