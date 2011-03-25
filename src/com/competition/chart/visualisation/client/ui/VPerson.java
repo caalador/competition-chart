@@ -2,19 +2,19 @@ package com.competition.chart.visualisation.client.ui;
 
 public class VPerson {
     String name;
-    boolean hasAdvanced;
+    int advancedToTier;
 
-    public VPerson(String name, boolean hasAdvanced) {
+    public VPerson(String name, int advancedToTier) {
         this.name = name;
-        this.hasAdvanced = hasAdvanced;
+        this.advancedToTier = advancedToTier;
     }
 
     public String getName() {
         return name;
     }
 
-    public boolean hasAdvanced() {
-        return hasAdvanced;
+    public int advancedTo() {
+        return advancedToTier;
     }
 
 }

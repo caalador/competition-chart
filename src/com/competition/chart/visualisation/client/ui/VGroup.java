@@ -6,16 +6,20 @@ import java.util.List;
 public class VGroup {
     private String name;
     private int number;
-    private int tier;
+    private int tier = 0;
     private List<VPerson> names = new LinkedList<VPerson>();
     private VGroup childGroup = null;
     private List<VGroup> parents = new LinkedList<VGroup>();
+    private int middleOfGroup;
+    private int groupBottom;
 
     public VGroup(String id) {
         String[] idString = id.split("_");
         number = Integer.parseInt(idString[0]);
         name = idString[1];
-        tier = Integer.parseInt(idString[2]);
+        if (idString.length == 3) {
+            tier = Integer.parseInt(idString[2]);
+        }
     }
 
     public String getName() {
@@ -65,4 +69,21 @@ public class VGroup {
     public List<VGroup> getParents() {
         return parents;
     }
+
+    public int getMiddleOfGroup() {
+        return middleOfGroup;
+    }
+
+    public void setMiddleOfGroup(int middleOfGroup) {
+        this.middleOfGroup = middleOfGroup;
+    }
+
+    public int getGroupBottom() {
+        return groupBottom;
+    }
+
+    public void setGroupBottom(int groupBottom) {
+        this.groupBottom = groupBottom;
+    }
+
 }
