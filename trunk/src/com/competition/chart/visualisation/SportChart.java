@@ -14,14 +14,16 @@ import com.vaadin.ui.AbstractComponent;
 @com.vaadin.ui.ClientWidget(com.competition.chart.visualisation.client.ui.VSportChart.class)
 public class SportChart extends AbstractComponent {
 
+    private static final long serialVersionUID = -1405328596263886664L;
+
     Map<String, List<String>> data = new HashMap<String, List<String>>();
 
     public SportChart() {
     }
 
-    public void addGroup(int groupNumber, String groupName, int groupTier,
+    public void addGroup(int groupNumber, String groupName,
             List<String> participants) {
-        String id = groupNumber + "_" + groupName + "_" + groupTier;
+        String id = groupNumber + "_" + groupName;
         data.put(id, participants);
     }
 
