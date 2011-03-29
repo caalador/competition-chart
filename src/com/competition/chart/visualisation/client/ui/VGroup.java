@@ -10,8 +10,9 @@ public class VGroup {
     private List<VPerson> names = new LinkedList<VPerson>();
     private VGroup childGroup = null;
     private List<VGroup> parents = new LinkedList<VGroup>();
-    private int middleOfGroup;
-    private int groupBottom;
+    private int middleOfGroup, top, bottom;
+
+    private boolean hasPosition = false;
 
     public VGroup(String id) {
         String[] idString = id.split("_");
@@ -74,16 +75,40 @@ public class VGroup {
         return middleOfGroup;
     }
 
-    public void setMiddleOfGroup(int middleOfGroup) {
+    public int getBottom() {
+        return bottom;
+    }
+
+    public int getTop() {
+        return top;
+    }
+
+    public int calculatePosition(int offsetTop) {
+        top = offsetTop;
+        bottom = offsetTop + (20 * names.size());
+        middleOfGroup = top + (bottom - top) / 2;
+        hasPosition = true;
+        return bottom + 20;
+    }
+
+    public void calculatePositionFromMiddle(int middleOfGroup) {
         this.middleOfGroup = middleOfGroup;
+        int namesSizeHalved = 20 * names.size() / 2;
+        top = middleOfGroup - namesSizeHalved;
+        bottom = middleOfGroup + namesSizeHalved;
+        hasPosition = true;
     }
 
-    public int getGroupBottom() {
-        return groupBottom;
+    public boolean hasPosition() {
+        return hasPosition;
     }
 
-    public void setGroupBottom(int groupBottom) {
-        this.groupBottom = groupBottom;
+    public boolean hasCompetitors() {
+        for (VPerson p : names) {
+            if (p.getName().length() > 0 && p.advancedTo() > 0) {
+                return true;
+            }
+        }
+        return false;
     }
-
 }

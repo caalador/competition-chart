@@ -1,5 +1,6 @@
 package com.competition.chart.visualisation.client.ui;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Map;
 import com.competition.chart.visualisation.client.ui.canvas.client.Canvas;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
@@ -104,7 +106,17 @@ public class VSportChart extends Widget implements Paintable {
         }
 
         if (!groups.isEmpty()) {
-            buildGroups();
+            groupPositions();
+            try {
+                buildChildGroups();
+            } catch (Exception e) {
+                Window.alert("ChildGroups " + e.toString());
+            }
+            try {
+                calculateChildPositions();
+            } catch (Exception e) {
+                Window.alert("ChiuldPositions " + e.toString());
+            }
             drawChart();
         }
         if (uidl.hasAttribute("winner")) {
@@ -112,7 +124,19 @@ public class VSportChart extends Widget implements Paintable {
         }
     }
 
-    private void buildGroups() {
+    private void groupPositions() {
+        int top = 35;
+        onLeft = groups.size() / 2 + groups.size() % 2;
+        for (int i = 0; i < groups.size(); i++) {
+            VGroup group = groups.get(i);
+            if (i == onLeft) {
+                top = 35;
+            }
+            top = group.calculatePosition(top);
+        }
+    }
+
+    private void buildChildGroups() {
         amounts.put(0, groups.size());
         int nextID = groups.get(groups.size() - 1).getNumber() + 1;
         onLeft = groups.size() / 2 + groups.size() % 2;
@@ -135,6 +159,7 @@ public class VSportChart extends Widget implements Paintable {
                     addAdvanced(child, targetGroup.get(parent).getNames());
                     child.addParent(targetGroup.get(parent++));
                 }
+                fillGroup(child);
                 childGroup.add(child);
                 lastChild = child;
                 nextID++;
@@ -173,6 +198,7 @@ public class VSportChart extends Widget implements Paintable {
                     addAdvanced(child, targetGroup.get(parent).getNames());
                     child.addParent(targetGroup.get(parent++));
                 }
+                fillGroup(child);
                 childGroup.add(child);
                 lastChild = child;
                 nextID++;
@@ -199,6 +225,59 @@ public class VSportChart extends Widget implements Paintable {
                 addAdvanced(finalBout, lastChild.getNames());
             }
         }
+        fillGroup(finalBout);
+    }
+
+    private void calculateChildPositions() {
+        List<VGroup> allGroups = new LinkedList<VGroup>();
+
+        for (VGroup group : groups) {
+            VGroup child = group;
+            while (child.getChildGroup() != null) {
+                child = child.getChildGroup();
+                if (!allGroups.contains(child)) {
+                    allGroups.add(child);
+                }
+            }
+        }
+
+        while (true) {
+            if (calculatePosition(allGroups)) {
+                break;
+            }
+        }
+
+    }
+
+    private boolean calculatePosition(List<VGroup> allGroups) {
+        List<VGroup> remove = new ArrayList<VGroup>();
+
+        for (VGroup group : allGroups) {
+            boolean allParentsHavePosition = true;
+            for (VGroup parent : group.getParents()) {
+                if (!parent.hasPosition()) {
+                    allParentsHavePosition = false;
+                }
+            }
+            if (allParentsHavePosition) {
+                int bottom = Integer.MAX_VALUE;
+                int top = 0;
+                for (VGroup parent : group.getParents()) {
+                    if (parent.getBottom() < bottom) {
+                        bottom = parent.getBottom();
+                    }
+                    if (parent.getTop() > top) {
+                        top = parent.getTop();
+                    }
+                }
+                group.calculatePositionFromMiddle(bottom + (top - bottom) / 2);
+                remove.add(group);
+            }
+        }
+
+        allGroups.removeAll(remove);
+
+        return allGroups.isEmpty();
     }
 
     List<HTML> names = new LinkedList<HTML>();
@@ -216,7 +295,7 @@ public class VSportChart extends Widget implements Paintable {
         canvas.clear();
 
         offsetLeft = 15;
-        offsetTop = 15;
+
         // final VGroup lastDrawnChild = null;
         for (int j = 0; j < onLeft; j++) {
             final VGroup g = groups.get(j);
@@ -239,8 +318,6 @@ public class VSportChart extends Widget implements Paintable {
         }
         final int oldOffset = offsetLeft;
         final int oldTopsett = offsetTop;
-
-        fillGroup(childGroup);
 
         final int groupSize = (childGroup.getNames().size() * 20) / 2;
         offsetLeft += 130;
@@ -282,8 +359,6 @@ public class VSportChart extends Widget implements Paintable {
         boolean first = true;
         for (final VGroup parent : childGroup.getParents()) {
 
-            fillGroup(parent);
-
             if (!drawnGroups.contains(parent)) {
                 if (childGroup.getParents().size() == 2
                         && childGroup != finalBout) {
@@ -312,33 +387,18 @@ public class VSportChart extends Widget implements Paintable {
         // offsetTop = oldTopsett;
     }
 
-    private void fillGroup(VGroup group) {
-        if (group.getNames().isEmpty()) {
-            group.addName(new VPerson("", 0));
-            group.addName(new VPerson("", 0));
-        }
-        if (group.getNames().size() == 1) {
-            group.addName(new VPerson("", 0));
-        }
-    }
-
     private void drawLeft(final VGroup g, final boolean connectUp,
             final boolean connectDown) {
-        drawTier.put(g.getTier(), connectDown);
+        // drawTier.put(g.getTier(), connectDown);
         canvas.setStrokeStyle("rgb(0,0,0)");
         canvas.setLineWidth(1);
         canvas.beginPath();
 
         HTML name = new HTML(g.getName());
-        displayPanel.add(name, offsetLeft + 10, offsetTop + 5);
+        displayPanel.add(name, offsetLeft + 10, g.getTop() - 15);
         names.add(name);
 
-        final int groupOffset = offsetTop;
-
-        offsetTop += 20;
-
-        final int middleOfGroup = offsetTop + (g.getNames().size() * 20) / 2;
-        g.setMiddleOfGroup(middleOfGroup);
+        offsetTop = g.getTop();
 
         canvas.moveTo(offsetLeft, offsetTop);
         for (int i = 0; i < g.getNames().size(); i++) {
@@ -360,7 +420,7 @@ public class VSportChart extends Widget implements Paintable {
                 canvas.moveTo(offsetLeft + 100, offsetTop + 10);
                 canvas.lineTo(offsetLeft + 110, offsetTop + 10);
 
-                canvas.lineTo(offsetLeft + 110, middleOfGroup);
+                canvas.lineTo(offsetLeft + 110, g.getMiddleOfGroup());
 
                 canvas.moveTo(offsetLeft, offsetTop);
                 canvas.closePath();
@@ -371,8 +431,6 @@ public class VSportChart extends Widget implements Paintable {
             offsetTop += 20;
         }
 
-        g.setGroupBottom(offsetTop);
-
         if (g != finalBout) {
             /* next tier */
             if (hasAdvance(g.getNames(), g.getTier() + 1)) {
@@ -381,26 +439,24 @@ public class VSportChart extends Widget implements Paintable {
                 canvas.setStrokeStyle("rgb(10,255,0)");
                 canvas.beginPath();
             }
-            canvas.moveTo(offsetLeft + 110, middleOfGroup);
-            canvas.lineTo(offsetLeft + 120, middleOfGroup);
+            canvas.moveTo(offsetLeft + 110, g.getMiddleOfGroup());
+            canvas.lineTo(offsetLeft + 120, g.getMiddleOfGroup());
 
-            // line goes up
-            if (connectUp) {
-                canvas.lineTo(offsetLeft + 120, groupOffset + 10);
-            } else if (connectDown) {
-                canvas.lineTo(offsetLeft + 120, middleOfGroup
-                        + (middleOfGroup - groupOffset - 10));
-            }
+            canvas.lineTo(offsetLeft + 120, g.getChildGroup()
+                    .getMiddleOfGroup());
+
             if (g.getParents().size() > 0) {
                 canvas.moveTo(0, 0);
                 canvas.closePath();
                 canvas.stroke();
-                if (g.getNames().size() > 0) {
+                if (g.hasCompetitors()) {
                     canvas.setStrokeStyle("rgb(10,255,0)");
                     canvas.beginPath();
+                } else {
+                    canvas.beginPath();
                 }
-                canvas.moveTo(offsetLeft, middleOfGroup);
-                canvas.lineTo(offsetLeft - 10, middleOfGroup);
+                canvas.moveTo(offsetLeft, g.getMiddleOfGroup());
+                canvas.lineTo(offsetLeft - 10, g.getMiddleOfGroup());
             }
         }
 
@@ -409,28 +465,18 @@ public class VSportChart extends Widget implements Paintable {
         canvas.stroke();
     }
 
-    private int getLowerParent(VGroup g, int groupOffset) {
-        if (g.getParents().isEmpty()) {
-            return groupOffset;
-        }
-        int bottom = 0;
-        for (VGroup parent : g.getParents()) {
-            if (parent.getGroupBottom() > bottom) {
-                bottom = parent.getGroupBottom();
-            }
-        }
-        return bottom;
-    }
-
     private void drawRight(final VGroup g, final boolean connectUp,
             final boolean connectDown) {
         canvas.setStrokeStyle("rgb(0,0,0)");
         canvas.setLineWidth(1);
         canvas.beginPath();
 
-        int offsetTopRight = offsetTop
-                - (g.getNames().size() - g.getChildGroup().getNames().size())
-                * 10;
+        // offsetTop = g.getTop();
+
+        int offsetTopRight = g.getTop();
+        // offsetTop
+        // - (g.getNames().size() - g.getChildGroup().getNames().size())
+        // * 10;
 
         HTML name = new HTML(g.getName());
         displayPanel.add(name, offsetLeft + 10, offsetTopRight - 15);
@@ -441,7 +487,7 @@ public class VSportChart extends Widget implements Paintable {
 
         final int middleOfGroup = offsetTopRight + (g.getNames().size() * 20)
                 / 2;
-        g.setMiddleOfGroup(middleOfGroup);
+
         canvas.moveTo(offsetLeft, offsetTopRight);
         for (int i = 0; i < g.getNames().size(); i++) {
             final VPerson p = g.getNames().get(i);
@@ -489,8 +535,10 @@ public class VSportChart extends Widget implements Paintable {
             canvas.moveTo(0, 0);
             canvas.closePath();
             canvas.stroke();
-            if (g.getNames().size() > 0) {
+            if (g.hasCompetitors()) {
                 canvas.setStrokeStyle("rgb(10,255,0)");
+                canvas.beginPath();
+            } else {
                 canvas.beginPath();
             }
             canvas.moveTo(offsetLeft + 100, middleOfGroup);
@@ -516,6 +564,16 @@ public class VSportChart extends Widget implements Paintable {
             if (p.advancedTo() >= child.getTier()) {
                 child.addName(p);
             }
+        }
+    }
+
+    private void fillGroup(VGroup group) {
+        if (group.getNames().isEmpty()) {
+            group.addName(new VPerson("", 0));
+            group.addName(new VPerson("", 0));
+        }
+        if (group.getNames().size() == 1) {
+            group.addName(new VPerson("", 0));
         }
     }
 
