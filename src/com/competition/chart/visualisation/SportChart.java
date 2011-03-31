@@ -16,15 +16,20 @@ public class SportChart extends AbstractComponent {
 
     private static final long serialVersionUID = -1405328596263886664L;
 
-    Map<String, List<String>> data = new HashMap<String, List<String>>();
+    Map<String, List<Competitor>> data = new HashMap<String, List<Competitor>>();
+    String winner;
 
     public SportChart() {
     }
 
     public void addGroup(int groupNumber, String groupName,
-            List<String> participants) {
+            List<Competitor> participants) {
         String id = groupNumber + "_" + groupName;
         data.put(id, participants);
+    }
+
+    public void addWinner(String name) {
+        winner = name;
     }
 
     @Override
@@ -33,11 +38,11 @@ public class SportChart extends AbstractComponent {
 
         Map<String, String> mmap = new HashMap<String, String>();
         for (String key : data.keySet()) {
-            List<String> names = data.get(key);
+            List<Competitor> persons = data.get(key);
             StringBuilder values = new StringBuilder();
 
-            for (String value : names) {
-                values.append(value);
+            for (Competitor person : persons) {
+                values.append(person.getName() + "_" + person.advancedTo());
                 values.append(";");
             }
 
@@ -46,6 +51,10 @@ public class SportChart extends AbstractComponent {
 
         if (mmap.size() > 0) {
             target.addAttribute("data", mmap);
+        }
+
+        if (winner != null) {
+            target.addAttribute("winner", winner);
         }
     }
 
