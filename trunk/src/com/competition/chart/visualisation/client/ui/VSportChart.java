@@ -36,25 +36,28 @@ public class VSportChart extends Widget implements Paintable {
     private final AbsolutePanel displayPanel;
     private final Canvas canvas;
 
+    private final VPaintGroup paint;
+
     private final List<VGroup> groups = new LinkedList<VGroup>();
     private VGroup finalBout, winner;
     // private String winner = null;
     private int onLeft, onRight;
     private final Map<Integer, Integer> amounts = new HashMap<Integer, Integer>();
 
+    private List<HTML> names = new LinkedList<HTML>();
+    private int offsetLeft = 15;
+    private int offsetTop = 15;
+    private List<VGroup> drawnGroups = new LinkedList<VGroup>();
+
     /**
      * The constructor should first call super() to initialize the component and
      * then handle any initialization relevant to Vaadin.
      */
     public VSportChart() {
-        // TODO Example code is extending GWT Widget so it must set a root
-        // element.
-        // Change to proper element or remove if extending another widget
         setElement(Document.get().createDivElement());
         setWidth("100%");
         setHeight("100%");
-        // This method call of the Paintable interface sets the component
-        // style name in DOM tree
+
         setStyleName(CLASSNAME);
         displayPanel = new AbsolutePanel();
         getElement().appendChild(displayPanel.getElement());
@@ -65,6 +68,8 @@ public class VSportChart extends Widget implements Paintable {
         displayPanel.add(canvas, 0, 0);
         setCanvasWidth(1400);
         setCanvasHeight(700);
+
+        paint = new VPaintGroup(canvas, displayPanel, names);
     }
 
     /**
@@ -105,6 +110,13 @@ public class VSportChart extends Widget implements Paintable {
             });
         }
 
+        if (uidl.hasAttribute("winner")) {
+            winner = new VGroup("99_ ");
+            winner.addName(new VPerson(uidl.getStringAttribute("winner"), 99));
+        } else {
+            winner = null;
+        }
+
         if (!groups.isEmpty()) {
             groupPositions();
             try {
@@ -117,10 +129,17 @@ public class VSportChart extends Widget implements Paintable {
             } catch (Exception e) {
                 Window.alert("ChiuldPositions " + e.toString());
             }
-            drawChart();
+            try {
+                drawChart();
+            } catch (Exception e) {
+                Window.alert("DRAW" + e.toString());
+            }
         }
-        if (uidl.hasAttribute("winner")) {
-            // winner = uidl.getStringAttribute("winner");
+        if (uidl.hasAttribute("width")) {
+            setCanvasWidth(uidl.getIntAttribute("width"));
+        }
+        if (uidl.hasAttribute("height")) {
+            setCanvasHeight(uidl.getIntAttribute("height"));
         }
     }
 
@@ -271,6 +290,9 @@ public class VSportChart extends Widget implements Paintable {
                     }
                 }
                 group.calculatePositionFromMiddle(bottom + (top - bottom) / 2);
+                if (winner != null && group == finalBout) {
+                    winner.calculatePosition(group.getTop() - 40);
+                }
                 remove.add(group);
             }
         }
@@ -279,11 +301,6 @@ public class VSportChart extends Widget implements Paintable {
 
         return allGroups.isEmpty();
     }
-
-    List<HTML> names = new LinkedList<HTML>();
-    int offsetLeft = 15;
-    int offsetTop = 15;
-    List<VGroup> drawnGroups = new LinkedList<VGroup>();
 
     private void drawChart() {
         for (final HTML name : names) {
@@ -299,7 +316,7 @@ public class VSportChart extends Widget implements Paintable {
         // final VGroup lastDrawnChild = null;
         for (int j = 0; j < onLeft; j++) {
             final VGroup g = groups.get(j);
-            drawLeft(g, j % 2 != 0, j % 2 == 0);
+            paint.left(g, offsetLeft);
             drawnGroups.add(g);
             drawChild(g.getChildGroup());
         }
@@ -327,18 +344,13 @@ public class VSportChart extends Widget implements Paintable {
             offsetTop -= 30;
             finalLeft = offsetLeft;
             finalTop = offsetTop;
-        }
 
-        if (drawTier.get(childGroup.getTier()) == null
-                && (amounts.get(childGroup.getTier()) / 2) > 1) {
-            drawTier.put(childGroup.getTier(), false);
-        }
-
-        if (drawTier.get(childGroup.getTier()) != null) {
-            drawLeft(childGroup, drawTier.get(childGroup.getTier()),
-                    !drawTier.get(childGroup.getTier()));
+            paint.finalBout(finalBout, offsetLeft);
+            if (winner != null) {
+                paint.winner(winner, finalBout, offsetLeft);
+            }
         } else {
-            drawLeft(childGroup, false, false);
+            paint.left(childGroup, offsetLeft);
         }
         drawnGroups.add(childGroup);
         if (childGroup.getChildGroup() != null) {
@@ -349,8 +361,6 @@ public class VSportChart extends Widget implements Paintable {
     }
 
     private void drawParent(final VGroup childGroup) {
-        // final int oldTopsett = offsetTop;
-
         offsetLeft += 30;
         if (childGroup == finalBout) {
             final int groupSize = (childGroup.getNames().size() * 20) / 2;
@@ -369,13 +379,13 @@ public class VSportChart extends Widget implements Paintable {
                                 * 10
                                 + (parent.getNames().size() * 20);
                     }
-                    drawRight(parent, !first, first);
+                    paint.right(parent, offsetLeft);
                     if (first) {
                         offsetTop = oldTopsett + 20;
                     }
                     first = false;
                 } else {
-                    drawRight(parent, false, false);
+                    paint.right(parent, offsetLeft);
                 }
                 if (parent.getParents() != null) {
                     offsetLeft += 100;
@@ -384,173 +394,9 @@ public class VSportChart extends Widget implements Paintable {
                 }
             }
         }
-        // offsetTop = oldTopsett;
     }
 
-    private void drawLeft(final VGroup g, final boolean connectUp,
-            final boolean connectDown) {
-        // drawTier.put(g.getTier(), connectDown);
-        canvas.setStrokeStyle("rgb(0,0,0)");
-        canvas.setLineWidth(1);
-        canvas.beginPath();
-
-        HTML name = new HTML(g.getName());
-        displayPanel.add(name, offsetLeft + 10, g.getTop() - 15);
-        names.add(name);
-
-        offsetTop = g.getTop();
-
-        canvas.moveTo(offsetLeft, offsetTop);
-        for (int i = 0; i < g.getNames().size(); i++) {
-            final VPerson p = g.getNames().get(i);
-
-            name = new HTML(p.getName());
-            displayPanel.add(name, offsetLeft + 10, offsetTop + 5);
-            names.add(name);
-
-            canvas.rect(offsetLeft, offsetTop, 100, 20);
-
-            if (g != finalBout) {
-                if (p.advancedTo() >= g.getTier() + 1) {
-                    canvas.closePath();
-                    canvas.stroke();
-                    canvas.setStrokeStyle("rgb(10,255,0)");
-                    canvas.beginPath();
-                }
-                canvas.moveTo(offsetLeft + 100, offsetTop + 10);
-                canvas.lineTo(offsetLeft + 110, offsetTop + 10);
-
-                canvas.lineTo(offsetLeft + 110, g.getMiddleOfGroup());
-
-                canvas.moveTo(offsetLeft, offsetTop);
-                canvas.closePath();
-                canvas.stroke();
-                canvas.setStrokeStyle("rgb(0,0,0)");
-                canvas.beginPath();
-            }
-            offsetTop += 20;
-        }
-
-        if (g != finalBout) {
-            /* next tier */
-            if (hasAdvance(g.getNames(), g.getTier() + 1)) {
-                canvas.closePath();
-                canvas.stroke();
-                canvas.setStrokeStyle("rgb(10,255,0)");
-                canvas.beginPath();
-            }
-            canvas.moveTo(offsetLeft + 110, g.getMiddleOfGroup());
-            canvas.lineTo(offsetLeft + 120, g.getMiddleOfGroup());
-
-            canvas.lineTo(offsetLeft + 120, g.getChildGroup()
-                    .getMiddleOfGroup());
-
-            if (g.getParents().size() > 0) {
-                canvas.moveTo(0, 0);
-                canvas.closePath();
-                canvas.stroke();
-                if (g.hasCompetitors()) {
-                    canvas.setStrokeStyle("rgb(10,255,0)");
-                    canvas.beginPath();
-                } else {
-                    canvas.beginPath();
-                }
-                canvas.moveTo(offsetLeft, g.getMiddleOfGroup());
-                canvas.lineTo(offsetLeft - 10, g.getMiddleOfGroup());
-            }
-        }
-
-        canvas.moveTo(0, 0);
-        canvas.closePath();
-        canvas.stroke();
-    }
-
-    private void drawRight(final VGroup g, final boolean connectUp,
-            final boolean connectDown) {
-        canvas.setStrokeStyle("rgb(0,0,0)");
-        canvas.setLineWidth(1);
-        canvas.beginPath();
-
-        // offsetTop = g.getTop();
-
-        int offsetTopRight = g.getTop();
-        // offsetTop
-        // - (g.getNames().size() - g.getChildGroup().getNames().size())
-        // * 10;
-
-        HTML name = new HTML(g.getName());
-        displayPanel.add(name, offsetLeft + 10, offsetTopRight - 15);
-        names.add(name);
-
-        // final int groupOffset = offsetTopRight;
-        // offsetTop -= 20;
-
-        final int middleOfGroup = offsetTopRight + (g.getNames().size() * 20)
-                / 2;
-
-        canvas.moveTo(offsetLeft, offsetTopRight);
-        for (int i = 0; i < g.getNames().size(); i++) {
-            final VPerson p = g.getNames().get(i);
-
-            name = new HTML(p.getName());
-            displayPanel.add(name, offsetLeft + 10, offsetTopRight + 5);
-            names.add(name);
-
-            canvas.rect(offsetLeft, offsetTopRight, 100, 20);
-
-            if (p.advancedTo() >= g.getTier() + 1) {
-                canvas.closePath();
-                canvas.stroke();
-                canvas.setStrokeStyle("rgb(10,255,0)");
-                canvas.beginPath();
-            }
-            canvas.moveTo(offsetLeft, offsetTopRight + 10);
-            canvas.lineTo(offsetLeft - 10, offsetTopRight + 10);
-
-            canvas.lineTo(offsetLeft - 10, middleOfGroup);
-
-            canvas.moveTo(offsetLeft, offsetTopRight);
-            canvas.closePath();
-            canvas.stroke();
-            canvas.setStrokeStyle("rgb(0,0,0)");
-            canvas.beginPath();
-
-            offsetTopRight += 20;
-        }
-
-        /* next tier */
-        if (hasAdvance(g.getNames(), g.getTier() + 1)) {
-            canvas.closePath();
-            canvas.stroke();
-            canvas.setStrokeStyle("rgb(10,255,0)");
-            canvas.beginPath();
-        }
-        canvas.moveTo(offsetLeft - 10, middleOfGroup);
-        canvas.lineTo(offsetLeft - 20, middleOfGroup);
-
-        // line goes up
-        canvas.lineTo(offsetLeft - 20, g.getChildGroup().getMiddleOfGroup());
-
-        if (g.getParents().size() > 0) {
-            canvas.moveTo(0, 0);
-            canvas.closePath();
-            canvas.stroke();
-            if (g.hasCompetitors()) {
-                canvas.setStrokeStyle("rgb(10,255,0)");
-                canvas.beginPath();
-            } else {
-                canvas.beginPath();
-            }
-            canvas.moveTo(offsetLeft + 100, middleOfGroup);
-            canvas.lineTo(offsetLeft + 110, middleOfGroup);
-        }
-
-        canvas.moveTo(0, 0);
-        canvas.closePath();
-        canvas.stroke();
-    }
-
-    private boolean hasAdvance(final List<VPerson> persons, int toTier) {
+    public static boolean hasAdvance(final List<VPerson> persons, int toTier) {
         for (final VPerson p : persons) {
             if (p.advancedTo() >= toTier) {
                 return true;
@@ -569,10 +415,6 @@ public class VSportChart extends Widget implements Paintable {
 
     private void fillGroup(VGroup group) {
         if (group.getNames().isEmpty()) {
-            group.addName(new VPerson("", 0));
-            group.addName(new VPerson("", 0));
-        }
-        if (group.getNames().size() == 1) {
             group.addName(new VPerson("", 0));
         }
     }
