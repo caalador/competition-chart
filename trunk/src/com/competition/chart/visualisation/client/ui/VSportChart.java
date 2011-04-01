@@ -556,6 +556,7 @@ public class VSportChart extends Widget implements Paintable {
             }
             break;
         }
+        case Event.ONMOUSEOUT:
         case Event.ONMOUSEUP: {
             mouseDown = false;
         }
