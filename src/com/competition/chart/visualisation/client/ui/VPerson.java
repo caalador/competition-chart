@@ -6,6 +6,7 @@ public class VPerson {
     int advancedToTier;
 
     public VPerson(long id, String name, int advancedToTier) {
+        this.id = id;
         this.name = name;
         this.advancedToTier = advancedToTier;
     }
