@@ -50,8 +50,10 @@ public class VSportChart extends Widget implements Paintable {
     private List<VGroup> drawnGroups = new LinkedList<VGroup>();
     private boolean onlyLeft;
 
-    boolean mouseDown = false;
-    boolean enableDragging = false;
+    public static int BOX_WIDTH = 125;
+
+    private boolean mouseDown = false;
+    private boolean enableDragging = false;
 
     private int width, height;
 
@@ -103,6 +105,11 @@ public class VSportChart extends Widget implements Paintable {
             enableDragging = true;
         } else {
             enableDragging = false;
+        }
+
+        if (uidl.hasAttribute("boxWidth")) {
+            BOX_WIDTH = uidl.getIntAttribute("boxWidth");
+            paint.setBoxWidth(BOX_WIDTH);
         }
 
         if (uidl.hasAttribute("data")) {
@@ -182,7 +189,7 @@ public class VSportChart extends Widget implements Paintable {
         List<VGroup> childGroup = new LinkedList<VGroup>();
 
         while (n > 1) {
-            offsetLeft += 130;
+            offsetLeft += BOX_WIDTH + 30;
             n = n / 2 + n % 2;
             for (int i = 0; i < n; i++) {
                 final VGroup child = new VGroup(nextID + "_ _" + tier);
@@ -206,7 +213,7 @@ public class VSportChart extends Widget implements Paintable {
             tier++;
         }
         if (n == 1) {
-            offsetLeft += 120;
+            offsetLeft += BOX_WIDTH + 20;
             finalBout = new VGroup(nextID + "_ _" + tier);
             lastChild.setChildGroup(finalBout);
             finalBout.addParent(lastChild);
@@ -227,7 +234,7 @@ public class VSportChart extends Widget implements Paintable {
         List<VGroup> childGroup = new LinkedList<VGroup>();
 
         while (n > 1) {
-            offsetLeft += 130;
+            offsetLeft += BOX_WIDTH + 30;
             n = n / 2 + n % 2;
             for (int i = 0; i < n; i++) {
                 final VGroup child = new VGroup(nextID + "_ _" + tier);
@@ -251,7 +258,7 @@ public class VSportChart extends Widget implements Paintable {
             tier++;
         }
         if (n == 1) {
-            offsetLeft += 120;
+            offsetLeft += BOX_WIDTH + 20;
             finalBout = new VGroup(nextID + "_ _" + tier);
             lastChild.setChildGroup(finalBout);
             finalBout.addParent(lastChild);
@@ -259,7 +266,7 @@ public class VSportChart extends Widget implements Paintable {
             finalBout.setLeftSide(offsetLeft);
         }
 
-        offsetLeft += tier * 130;
+        offsetLeft += tier * (BOX_WIDTH + 30);
         offsetLeft -= 10;
         n = onRight;
         parent = onLeft;
@@ -271,7 +278,7 @@ public class VSportChart extends Widget implements Paintable {
         }
 
         while (n > 1) {
-            offsetLeft -= 130;
+            offsetLeft -= BOX_WIDTH + 30;
             n = n / 2 + n % 2;
             for (int i = 0; i < n; i++) {
                 final VGroup child = new VGroup(nextID + "_ _" + tier);
@@ -378,16 +385,12 @@ public class VSportChart extends Widget implements Paintable {
 
         canvas.clear();
 
-        offsetLeft = 15;
-
         for (int j = 0; j < onLeft; j++) {
             final VGroup group = groups.get(j);
-            group.setLeftSide(offsetLeft);
             paint.left(group);
             drawnGroups.add(group);
             drawChild(group.getChildGroup());
         }
-        offsetLeft = finalLeft + 90;
         drawParent(finalBout);
     }
 

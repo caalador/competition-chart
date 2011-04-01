@@ -16,36 +16,32 @@ public class ChartApplication extends Application {
         final Window mainWindow = new Window("Chart Application");
 
         List<Competitor> group1 = new LinkedList<Competitor>();
-        group1.add(new Competitor(1, "J. Kulmala", 2));
-        group1.add(new Competitor(2, "W. Lindberg", 0));
+        group1.add(new Competitor(1, "Vepsäläinen Johan", 1));
 
         List<Competitor> group2 = new LinkedList<Competitor>();
-        group2.add(new Competitor(3, "J. Lehtinen", 0));
-        group2.add(new Competitor(4, "O. Nieminen", 1));
+        group2.add(new Competitor(2, "Otto Meri", 0));
+        group2.add(new Competitor(3, "Moilanen Joonas", 0));
 
         List<Competitor> group3 = new LinkedList<Competitor>();
-        group3.add(new Competitor(5, "T. Lindros", 0));
-        group3.add(new Competitor(6, "S. Liipo", 1));
+        group3.add(new Competitor(4, "Hellsten Simo", 0));
+        group3.add(new Competitor(5, "Vilkama Voitto", 0));
 
         List<Competitor> group4 = new LinkedList<Competitor>();
-        group4.add(new Competitor(7, "T. Tarvakainen", 4));
-        group4.add(new Competitor(8, "S. Litz", 0));
+        group4.add(new Competitor(6, "Roininen Tuomas", 1));
 
         List<Competitor> group5 = new LinkedList<Competitor>();
-        group5.add(new Competitor(9, "J. Lehtinen", 0));
-        group5.add(new Competitor(10, "O. Nieminen", 0));
+        group5.add(new Competitor(7, "Rupponen Pasi", 1));
 
         List<Competitor> group6 = new LinkedList<Competitor>();
-        group6.add(new Competitor(11, "J. Lehtinen", 0));
-        group6.add(new Competitor(12, "O. Nieminen", 1));
+        group6.add(new Competitor(8, "Korhonen Markku", 0));
+        group6.add(new Competitor(9, "Malm Janne", 0));
 
         List<Competitor> group7 = new LinkedList<Competitor>();
-        group7.add(new Competitor(13, "J. Lehtinen", 0));
-        group7.add(new Competitor(14, "O. Nieminen", 0));
+        group7.add(new Competitor(10, "Marjola Kalle", 0));
+        group7.add(new Competitor(11, "Shibata Minako", 0));
 
         List<Competitor> group8 = new LinkedList<Competitor>();
-        group8.add(new Competitor(15, "J. Lehtinen", 0));
-        group8.add(new Competitor(16, "O. Nieminen", 0));
+        group8.add(new Competitor(12, "Nieminen Vesa", 1));
 
         final SportChart chart1 = new SportChart();
         chart1.addGroup(1, "A sarja", group1);
