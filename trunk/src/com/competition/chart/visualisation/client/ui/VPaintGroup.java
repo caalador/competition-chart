@@ -238,8 +238,9 @@ public class VPaintGroup {
 
         canvas.setStrokeStyle("rgb(10,255,0)");
         canvas.beginPath();
-        canvas.moveTo(winner.getLeftSide() + 50, offsetTop);
-        canvas.lineTo(winner.getLeftSide() + 50, finalBout.getTop() + 1);
+        canvas.moveTo(winner.getLeftSide() + BOX_WIDTH / 2, offsetTop);
+        canvas.lineTo(winner.getLeftSide() + BOX_WIDTH / 2,
+                finalBout.getTop() + 1);
         canvas.closePath();
         canvas.stroke();
     }

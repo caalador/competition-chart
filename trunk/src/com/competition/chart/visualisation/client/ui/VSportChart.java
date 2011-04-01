@@ -12,6 +12,7 @@ import com.competition.chart.visualisation.client.ui.canvas.client.Canvas;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
@@ -53,6 +54,7 @@ public class VSportChart extends Widget implements Paintable {
     public static int BOX_WIDTH = 125;
 
     private boolean mouseDown = false;
+    private boolean mouseMoved = false;
     private boolean enableDragging = false;
 
     private int width, height;
@@ -165,6 +167,7 @@ public class VSportChart extends Widget implements Paintable {
         }
 
         if (!groups.isEmpty()) {
+            offsetLeft = 15;
             if (onlyLeft) {
                 positionsLeft();
                 buildChildGroupsFromLeft();
@@ -468,7 +471,6 @@ public class VSportChart extends Widget implements Paintable {
                 if (childGroup.getParents().size() == 2
                         && childGroup != finalBout) {
                     paint.right(parent);
-
                 } else {
                     paint.right(parent);
                 }
@@ -477,6 +479,7 @@ public class VSportChart extends Widget implements Paintable {
                     drawParent(parent);
                     offsetLeft -= 130;
                 }
+                drawnGroups.add(parent);
             }
         }
     }
@@ -557,16 +560,16 @@ public class VSportChart extends Widget implements Paintable {
         }
 
         switch (DOM.eventGetType(event)) {
-        case Event.ONMOUSEDOWN: {
+        case Event.ONMOUSEDOWN:
             mouseDown = true;
             xDown = event.getClientX();
             yDown = event.getClientY();
             break;
-        }
-        case Event.ONMOUSEMOVE: {
+        case Event.ONMOUSEMOVE:
             if (!mouseDown) {
                 break;
             }
+            mouseMoved = true;
             int xChange = event.getClientX() - xDown;
             int yChange = event.getClientY() - yDown;
 
@@ -582,11 +585,38 @@ public class VSportChart extends Widget implements Paintable {
                 drawChart();
             }
             break;
-        }
+        case Event.ONMOUSEUP:
+            if (!mouseMoved) {
+                mouseMoved = false;
+                mouseDown = false;
+                int x = event.getClientX() - getAbsoluteLeft();
+                int y = event.getClientY() - getAbsoluteTop();
+                // Window.alert("Snap dragon\n" + event.getClientX() + "::"
+                // + event.getClientY() + "\n" + getAbsoluteTop());
+                // TODO: get person ID
+                for (VGroup group : drawnGroups) {
+                    if (group.getLeftSide() < x
+                            && x < group.getLeftSide() + BOX_WIDTH
+                            && group.getTop() < y && y < group.getBottom()) {
+                        try {
+                            VPerson person = group.getNames().get(
+                                    (int) (y - group.getTop()) / 20);
+                            valueSelect(Long.toString(person.getId()));
+                        } catch (IndexOutOfBoundsException ioob) {
+                            Window.alert("Problem finding person");
+                            // Failed to find user
+                        }
+                        break;
+                    }
+                }
+            }
         case Event.ONMOUSEOUT:
-        case Event.ONMOUSEUP: {
+            mouseMoved = false;
             mouseDown = false;
         }
-        }
+    }
+
+    public void valueSelect(String value) {
+        client.updateVariable(paintableId, "selected", value, true);
     }
 }
