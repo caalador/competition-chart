@@ -69,15 +69,20 @@ public class VSportChart extends Widget implements Paintable {
         sinkEvents(Event.MOUSEEVENTS);
 
         setStyleName(CLASSNAME);
+
         displayPanel = new AbsolutePanel();
         getElement().appendChild(displayPanel.getElement());
         DOM.setStyleAttribute(displayPanel.getElement(), "position", "relative");
         DOM.setStyleAttribute(displayPanel.getElement(), "zIndex", "9000");
 
+        displayPanel.setWidth("100%");
+        displayPanel.setHeight("100%");
+
         canvas = new Canvas(100, 100);
         displayPanel.add(canvas, 0, 0);
-        setCanvasWidth(1400);
-        setCanvasHeight(700);
+
+        setCanvasWidth(1920);
+        setCanvasHeight(1080);
 
         paint = new VPaintGroup(canvas, displayPanel, names);
     }
@@ -94,6 +99,27 @@ public class VSportChart extends Widget implements Paintable {
 
         this.client = client;
         paintableId = uidl.getId();
+
+        if (uidl.hasAttribute("width")) {
+            width = uidl.getIntAttribute("width");
+
+            // Percentual width
+            if (uidl.hasAttribute("widthpercentage")) {
+                width = getElement().getParentElement().getClientWidth();
+            }
+
+            setCanvasWidth(width);
+        }
+        if (uidl.hasAttribute("height")) {
+            height = uidl.getIntAttribute("height");
+
+            // Percentual height
+            if (uidl.hasAttribute("heightpercentage")) {
+                height = getElement().getParentElement().getClientHeight();
+            }
+
+            setCanvasHeight(height);
+        }
 
         if (uidl.hasAttribute("allOnLeft")) {
             onlyLeft = true;
@@ -490,7 +516,6 @@ public class VSportChart extends Widget implements Paintable {
     public void setCanvasWidth(final int width) {
         canvas.setWidth(width);
         displayPanel.setWidth(width + "px");
-        setWidth(width + "px");
     }
 
     /**
@@ -502,7 +527,6 @@ public class VSportChart extends Widget implements Paintable {
     public void setCanvasHeight(final int height) {
         canvas.setHeight(height);
         displayPanel.setHeight(height + "px");
-        setHeight(height + "px");
     }
 
     public int getWidgetWidth() {

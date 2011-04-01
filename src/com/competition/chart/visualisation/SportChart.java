@@ -27,8 +27,8 @@ public class SportChart extends AbstractComponent {
     private boolean sendBoxWidth = false;
 
     public SportChart() {
-        setWidth("1400px");
-        setHeight("700px");
+        setWidth("1600px");
+        setHeight("1200px");
     }
 
     public SportChart(String width, String height) {
