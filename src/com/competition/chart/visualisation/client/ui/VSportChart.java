@@ -11,6 +11,7 @@ import java.util.Map;
 import com.competition.chart.visualisation.client.ui.canvas.client.Canvas;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
@@ -49,6 +50,11 @@ public class VSportChart extends Widget implements Paintable {
     private List<VGroup> drawnGroups = new LinkedList<VGroup>();
     private boolean onlyLeft;
 
+    boolean mouseDown = false;
+    boolean enableDragging = false;
+
+    private int width, height;
+
     /**
      * The constructor should first call super() to initialize the component and
      * then handle any initialization relevant to Vaadin.
@@ -57,6 +63,8 @@ public class VSportChart extends Widget implements Paintable {
         setElement(Document.get().createDivElement());
         setWidth("100%");
         setHeight("100%");
+
+        sinkEvents(Event.MOUSEEVENTS);
 
         setStyleName(CLASSNAME);
         displayPanel = new AbsolutePanel();
@@ -85,17 +93,16 @@ public class VSportChart extends Widget implements Paintable {
         this.client = client;
         paintableId = uidl.getId();
 
-        if (uidl.hasAttribute("width")) {
-            setCanvasWidth(uidl.getIntAttribute("width"));
-        }
-        if (uidl.hasAttribute("height")) {
-            setCanvasHeight(uidl.getIntAttribute("height"));
-        }
-
         if (uidl.hasAttribute("allOnLeft")) {
             onlyLeft = true;
         } else {
             onlyLeft = false;
+        }
+
+        if (uidl.hasAttribute("enableDrag")) {
+            enableDragging = true;
+        } else {
+            enableDragging = false;
         }
 
         if (uidl.hasAttribute("data")) {
@@ -140,7 +147,7 @@ public class VSportChart extends Widget implements Paintable {
     }
 
     private void groupPositions() {
-        int top = 35;
+        float top = 35;
 
         onLeft = groups.size() / 2 + groups.size() % 2;
         onRight = groups.size() - onLeft;
@@ -156,7 +163,7 @@ public class VSportChart extends Widget implements Paintable {
     }
 
     private void positionsLeft() {
-        int top = 35;
+        float top = 35;
 
         for (int i = 0; i < groups.size(); i++) {
             VGroup group = groups.get(i);
@@ -338,8 +345,8 @@ public class VSportChart extends Widget implements Paintable {
                 }
             }
             if (allParentsHavePosition) {
-                int bottom = Integer.MAX_VALUE;
-                int top = 0;
+                float bottom = Float.MAX_VALUE;
+                float top = 0;
                 for (VGroup parent : group.getParents()) {
                     if (parent.getBottom() < bottom) {
                         bottom = parent.getBottom();
@@ -382,7 +389,6 @@ public class VSportChart extends Widget implements Paintable {
         }
         offsetLeft = finalLeft + 90;
         drawParent(finalBout);
-        drawnGroups.clear();
     }
 
     private void drawLeftChart() {
@@ -401,7 +407,6 @@ public class VSportChart extends Widget implements Paintable {
                 drawChild(group.getChildGroup());
             }
         }
-        drawnGroups.clear();
     }
 
     private int finalLeft;
@@ -482,6 +487,7 @@ public class VSportChart extends Widget implements Paintable {
     public void setCanvasWidth(final int width) {
         canvas.setWidth(width);
         displayPanel.setWidth(width + "px");
+        setWidth(width + "px");
     }
 
     /**
@@ -493,6 +499,7 @@ public class VSportChart extends Widget implements Paintable {
     public void setCanvasHeight(final int height) {
         canvas.setHeight(height);
         displayPanel.setHeight(height + "px");
+        setHeight(height + "px");
     }
 
     public int getWidgetWidth() {
@@ -511,6 +518,47 @@ public class VSportChart extends Widget implements Paintable {
             } catch (final Exception f) {
                 return getOffsetWidth();
             }
+        }
+    }
+
+    int xDown = 0, yDown = 0;
+
+    @Override
+    public void onBrowserEvent(Event event) {
+        if (paintableId == null || client == null || !enableDragging) {
+            return;
+        }
+
+        switch (DOM.eventGetType(event)) {
+        case Event.ONMOUSEDOWN: {
+            mouseDown = true;
+            xDown = event.getClientX();
+            yDown = event.getClientY();
+            break;
+        }
+        case Event.ONMOUSEMOVE: {
+            if (!mouseDown) {
+                break;
+            }
+            int xChange = event.getClientX() - xDown;
+            int yChange = event.getClientY() - yDown;
+
+            xDown = event.getClientX();
+            yDown = event.getClientY();
+            for (VGroup group : drawnGroups) {
+                group.calculatePosition(group.getTop() + yChange);
+                group.setLeftSide(group.getLeftSide() + xChange);
+            }
+            if (onlyLeft) {
+                drawLeftChart();
+            } else {
+                drawChart();
+            }
+            break;
+        }
+        case Event.ONMOUSEUP: {
+            mouseDown = false;
+        }
         }
     }
 }
