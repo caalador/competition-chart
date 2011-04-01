@@ -11,6 +11,7 @@ public class VPaintGroup {
     private final AbsolutePanel displayPanel;
     private final Canvas canvas;
     private final List<HTML> names;
+    private int BOX_WIDTH = VSportChart.BOX_WIDTH;
 
     public VPaintGroup(Canvas canvas, AbsolutePanel displayPanel,
             List<HTML> names) {
@@ -36,11 +37,11 @@ public class VPaintGroup {
             final VPerson p = group.getNames().get(i);
 
             name = new HTML(p.getName());
-            displayPanel.add(name, (int) group.getLeftSide() + 10,
-                    offsetTop + 5);
+            displayPanel
+                    .add(name, (int) group.getLeftSide() + 5, offsetTop + 5);
             names.add(name);
 
-            canvas.rect(group.getLeftSide(), offsetTop, 100, 20);
+            canvas.rect(group.getLeftSide(), offsetTop, BOX_WIDTH, 20);
 
             if (p.advancedTo() >= group.getTier() + 1) {
                 canvas.closePath();
@@ -48,10 +49,11 @@ public class VPaintGroup {
                 canvas.setStrokeStyle("rgb(10,255,0)");
                 canvas.beginPath();
             }
-            canvas.moveTo(group.getLeftSide() + 100, offsetTop + 10);
-            canvas.lineTo(group.getLeftSide() + 110, offsetTop + 10);
+            canvas.moveTo(group.getLeftSide() + BOX_WIDTH, offsetTop + 10);
+            canvas.lineTo(group.getLeftSide() + BOX_WIDTH + 10, offsetTop + 10);
 
-            canvas.lineTo(group.getLeftSide() + 110, group.getMiddleOfGroup());
+            canvas.lineTo(group.getLeftSide() + BOX_WIDTH + 10,
+                    group.getMiddleOfGroup());
 
             canvas.moveTo(group.getLeftSide(), offsetTop);
             canvas.closePath();
@@ -71,11 +73,13 @@ public class VPaintGroup {
         }
 
         if (group.getChildGroup() != null) {
-            canvas.moveTo(group.getLeftSide() + 110, group.getMiddleOfGroup());
-            canvas.lineTo(group.getLeftSide() + 120, group.getMiddleOfGroup());
+            canvas.moveTo(group.getLeftSide() + BOX_WIDTH + 10,
+                    group.getMiddleOfGroup());
+            canvas.lineTo(group.getLeftSide() + BOX_WIDTH + 20,
+                    group.getMiddleOfGroup());
 
-            canvas.lineTo(group.getLeftSide() + 120, group.getChildGroup()
-                    .getMiddleOfGroup());
+            canvas.lineTo(group.getLeftSide() + BOX_WIDTH + 20, group
+                    .getChildGroup().getMiddleOfGroup());
         }
 
         if (group.getParents().size() > 0) {
@@ -117,11 +121,11 @@ public class VPaintGroup {
             final VPerson p = group.getNames().get(i);
 
             name = new HTML(p.getName());
-            displayPanel.add(name, (int) group.getLeftSide() + 10,
+            displayPanel.add(name, (int) group.getLeftSide() + 5,
                     offsetTopRight + 5);
             names.add(name);
 
-            canvas.rect(group.getLeftSide(), offsetTopRight, 100, 20);
+            canvas.rect(group.getLeftSide(), offsetTopRight, BOX_WIDTH, 20);
 
             if (p.advancedTo() >= group.getTier() + 1) {
                 canvas.closePath();
@@ -166,8 +170,8 @@ public class VPaintGroup {
             } else {
                 canvas.beginPath();
             }
-            canvas.moveTo(group.getLeftSide() + 100, middleOfGroup);
-            canvas.lineTo(group.getLeftSide() + 110, middleOfGroup);
+            canvas.moveTo(group.getLeftSide() + BOX_WIDTH, middleOfGroup);
+            canvas.lineTo(group.getLeftSide() + BOX_WIDTH + 10, middleOfGroup);
         }
 
         canvas.moveTo(0, 0);
@@ -197,7 +201,7 @@ public class VPaintGroup {
                     offsetTop + 5);
             names.add(name);
 
-            canvas.rect(group.getLeftSide(), offsetTop, 100, 20);
+            canvas.rect(group.getLeftSide(), offsetTop, BOX_WIDTH, 20);
 
             offsetTop += 20;
         }
@@ -224,7 +228,7 @@ public class VPaintGroup {
                     offsetTop + 5);
             names.add(name);
 
-            canvas.rect(winner.getLeftSide(), offsetTop, 100, 20);
+            canvas.rect(winner.getLeftSide(), offsetTop, BOX_WIDTH, 20);
 
             offsetTop += 21;
         }
@@ -238,5 +242,9 @@ public class VPaintGroup {
         canvas.lineTo(winner.getLeftSide() + 50, finalBout.getTop() + 1);
         canvas.closePath();
         canvas.stroke();
+    }
+
+    public void setBoxWidth(int boxWidth) {
+        BOX_WIDTH = boxWidth;
     }
 }

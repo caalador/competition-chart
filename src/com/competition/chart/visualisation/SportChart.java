@@ -23,6 +23,8 @@ public class SportChart extends AbstractComponent {
     private Map<String, List<Competitor>> data = new HashMap<String, List<Competitor>>();
     private boolean left = false;
     private boolean enableDrag = false;
+    private int boxWidth;
+    private boolean sendBoxWidth = false;
 
     public SportChart() {
         setWidth("1400px");
@@ -56,6 +58,11 @@ public class SportChart extends AbstractComponent {
         enableDrag = panning;
     }
 
+    public void setNameBoxWidth(int boxWidth) {
+        this.boxWidth = boxWidth;
+        sendBoxWidth = true;
+    }
+
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
@@ -84,6 +91,10 @@ public class SportChart extends AbstractComponent {
 
         if (enableDrag) {
             target.addAttribute("enableDrag", true);
+        }
+
+        if (sendBoxWidth) {
+            target.addAttribute("boxWidth", boxWidth);
         }
     }
 
