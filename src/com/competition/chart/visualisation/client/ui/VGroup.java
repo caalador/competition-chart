@@ -10,7 +10,7 @@ public class VGroup {
     private List<VPerson> names = new LinkedList<VPerson>();
     private VGroup childGroup = null;
     private List<VGroup> parents = new LinkedList<VGroup>();
-    private int middleOfGroup, top, bottom;
+    private int middleOfGroup, top, bottom, leftSide;
 
     private boolean hasPosition = false;
 
@@ -81,6 +81,14 @@ public class VGroup {
 
     public int getTop() {
         return top;
+    }
+
+    public int getLeftSide() {
+        return leftSide;
+    }
+
+    public void setLeftSide(int leftSide) {
+        this.leftSide = leftSide;
     }
 
     public int calculatePosition(int offsetTop) {

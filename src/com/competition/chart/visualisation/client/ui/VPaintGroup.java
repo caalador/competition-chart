@@ -19,26 +19,26 @@ public class VPaintGroup {
         this.names = names;
     }
 
-    public void left(VGroup group, int offsetLeft) {
+    public void left(VGroup group) {
         canvas.setStrokeStyle("rgb(0,0,0)");
         canvas.setLineWidth(1);
         canvas.beginPath();
 
         HTML name = new HTML(group.getName());
-        displayPanel.add(name, offsetLeft + 10, group.getTop() - 15);
+        displayPanel.add(name, group.getLeftSide() + 10, group.getTop() - 15);
         names.add(name);
 
         int offsetTop = group.getTop();
 
-        canvas.moveTo(offsetLeft, offsetTop);
+        canvas.moveTo(group.getLeftSide(), offsetTop);
         for (int i = 0; i < group.getNames().size(); i++) {
             final VPerson p = group.getNames().get(i);
 
             name = new HTML(p.getName());
-            displayPanel.add(name, offsetLeft + 10, offsetTop + 5);
+            displayPanel.add(name, group.getLeftSide() + 10, offsetTop + 5);
             names.add(name);
 
-            canvas.rect(offsetLeft, offsetTop, 100, 20);
+            canvas.rect(group.getLeftSide(), offsetTop, 100, 20);
 
             if (p.advancedTo() >= group.getTier() + 1) {
                 canvas.closePath();
@@ -46,12 +46,12 @@ public class VPaintGroup {
                 canvas.setStrokeStyle("rgb(10,255,0)");
                 canvas.beginPath();
             }
-            canvas.moveTo(offsetLeft + 100, offsetTop + 10);
-            canvas.lineTo(offsetLeft + 110, offsetTop + 10);
+            canvas.moveTo(group.getLeftSide() + 100, offsetTop + 10);
+            canvas.lineTo(group.getLeftSide() + 110, offsetTop + 10);
 
-            canvas.lineTo(offsetLeft + 110, group.getMiddleOfGroup());
+            canvas.lineTo(group.getLeftSide() + 110, group.getMiddleOfGroup());
 
-            canvas.moveTo(offsetLeft, offsetTop);
+            canvas.moveTo(group.getLeftSide(), offsetTop);
             canvas.closePath();
             canvas.stroke();
             canvas.setStrokeStyle("rgb(0,0,0)");
@@ -67,11 +67,14 @@ public class VPaintGroup {
             canvas.setStrokeStyle("rgb(10,255,0)");
             canvas.beginPath();
         }
-        canvas.moveTo(offsetLeft + 110, group.getMiddleOfGroup());
-        canvas.lineTo(offsetLeft + 120, group.getMiddleOfGroup());
 
-        canvas.lineTo(offsetLeft + 120, group.getChildGroup()
-                .getMiddleOfGroup());
+        if (group.getChildGroup() != null) {
+            canvas.moveTo(group.getLeftSide() + 110, group.getMiddleOfGroup());
+            canvas.lineTo(group.getLeftSide() + 120, group.getMiddleOfGroup());
+
+            canvas.lineTo(group.getLeftSide() + 120, group.getChildGroup()
+                    .getMiddleOfGroup());
+        }
 
         if (group.getParents().size() > 0) {
             canvas.moveTo(0, 0);
@@ -83,17 +86,16 @@ public class VPaintGroup {
             } else {
                 canvas.beginPath();
             }
-            canvas.moveTo(offsetLeft, group.getMiddleOfGroup());
-            canvas.lineTo(offsetLeft - 10, group.getMiddleOfGroup());
+            canvas.moveTo(group.getLeftSide(), group.getMiddleOfGroup());
+            canvas.lineTo(group.getLeftSide() - 10, group.getMiddleOfGroup());
 
         }
-
         canvas.moveTo(0, 0);
         canvas.closePath();
         canvas.stroke();
     }
 
-    public void right(VGroup group, int offsetLeft) {
+    public void right(VGroup group) {
         canvas.setStrokeStyle("rgb(0,0,0)");
         canvas.setLineWidth(1);
         canvas.beginPath();
@@ -101,21 +103,22 @@ public class VPaintGroup {
         int offsetTopRight = group.getTop();
 
         HTML name = new HTML(group.getName());
-        displayPanel.add(name, offsetLeft + 10, offsetTopRight - 15);
+        displayPanel.add(name, group.getLeftSide() + 10, offsetTopRight - 15);
         names.add(name);
 
         final int middleOfGroup = offsetTopRight
                 + (group.getNames().size() * 20) / 2;
 
-        canvas.moveTo(offsetLeft, offsetTopRight);
+        canvas.moveTo(group.getLeftSide(), offsetTopRight);
         for (int i = 0; i < group.getNames().size(); i++) {
             final VPerson p = group.getNames().get(i);
 
             name = new HTML(p.getName());
-            displayPanel.add(name, offsetLeft + 10, offsetTopRight + 5);
+            displayPanel
+                    .add(name, group.getLeftSide() + 10, offsetTopRight + 5);
             names.add(name);
 
-            canvas.rect(offsetLeft, offsetTopRight, 100, 20);
+            canvas.rect(group.getLeftSide(), offsetTopRight, 100, 20);
 
             if (p.advancedTo() >= group.getTier() + 1) {
                 canvas.closePath();
@@ -123,12 +126,12 @@ public class VPaintGroup {
                 canvas.setStrokeStyle("rgb(10,255,0)");
                 canvas.beginPath();
             }
-            canvas.moveTo(offsetLeft, offsetTopRight + 10);
-            canvas.lineTo(offsetLeft - 10, offsetTopRight + 10);
+            canvas.moveTo(group.getLeftSide(), offsetTopRight + 10);
+            canvas.lineTo(group.getLeftSide() - 10, offsetTopRight + 10);
 
-            canvas.lineTo(offsetLeft - 10, middleOfGroup);
+            canvas.lineTo(group.getLeftSide() - 10, middleOfGroup);
 
-            canvas.moveTo(offsetLeft, offsetTopRight);
+            canvas.moveTo(group.getLeftSide(), offsetTopRight);
             canvas.closePath();
             canvas.stroke();
             canvas.setStrokeStyle("rgb(0,0,0)");
@@ -144,10 +147,11 @@ public class VPaintGroup {
             canvas.setStrokeStyle("rgb(10,255,0)");
             canvas.beginPath();
         }
-        canvas.moveTo(offsetLeft - 10, middleOfGroup);
-        canvas.lineTo(offsetLeft - 20, middleOfGroup);
+        canvas.moveTo(group.getLeftSide() - 10, middleOfGroup);
+        canvas.lineTo(group.getLeftSide() - 20, middleOfGroup);
 
-        canvas.lineTo(offsetLeft - 20, group.getChildGroup().getMiddleOfGroup());
+        canvas.lineTo(group.getLeftSide() - 20, group.getChildGroup()
+                .getMiddleOfGroup());
 
         if (group.getParents().size() > 0) {
             canvas.moveTo(0, 0);
@@ -159,8 +163,8 @@ public class VPaintGroup {
             } else {
                 canvas.beginPath();
             }
-            canvas.moveTo(offsetLeft + 100, middleOfGroup);
-            canvas.lineTo(offsetLeft + 110, middleOfGroup);
+            canvas.moveTo(group.getLeftSide() + 100, middleOfGroup);
+            canvas.lineTo(group.getLeftSide() + 110, middleOfGroup);
         }
 
         canvas.moveTo(0, 0);
@@ -168,27 +172,27 @@ public class VPaintGroup {
         canvas.stroke();
     }
 
-    public void finalBout(VGroup group, int offsetLeft) {
+    public void finalBout(VGroup group) {
 
         canvas.setStrokeStyle("rgb(0,0,0)");
         canvas.setLineWidth(1);
         canvas.beginPath();
 
         HTML name = new HTML(group.getName());
-        displayPanel.add(name, offsetLeft + 10, group.getTop() - 15);
+        displayPanel.add(name, group.getLeftSide() + 10, group.getTop() - 15);
         names.add(name);
 
         int offsetTop = group.getTop();
 
-        canvas.moveTo(offsetLeft, offsetTop);
+        canvas.moveTo(group.getLeftSide(), offsetTop);
         for (int i = 0; i < group.getNames().size(); i++) {
             final VPerson p = group.getNames().get(i);
 
             name = new HTML(p.getName());
-            displayPanel.add(name, offsetLeft + 10, offsetTop + 5);
+            displayPanel.add(name, group.getLeftSide() + 10, offsetTop + 5);
             names.add(name);
 
-            canvas.rect(offsetLeft, offsetTop, 100, 20);
+            canvas.rect(group.getLeftSide(), offsetTop, 100, 20);
 
             offsetTop += 20;
         }
@@ -198,7 +202,7 @@ public class VPaintGroup {
         canvas.stroke();
     }
 
-    public void winner(VGroup winner, VGroup finalBout, int offsetLeft) {
+    public void winner(VGroup winner, VGroup finalBout) {
 
         canvas.setStrokeStyle("rgb(0,0,0)");
         canvas.setLineWidth(1);
@@ -206,15 +210,15 @@ public class VPaintGroup {
 
         int offsetTop = winner.getTop();
 
-        canvas.moveTo(offsetLeft, offsetTop);
+        canvas.moveTo(winner.getLeftSide(), offsetTop);
         for (int i = 0; i < winner.getNames().size(); i++) {
             final VPerson p = winner.getNames().get(i);
 
             HTML name = new HTML(p.getName());
-            displayPanel.add(name, offsetLeft + 10, offsetTop + 5);
+            displayPanel.add(name, winner.getLeftSide() + 10, offsetTop + 5);
             names.add(name);
 
-            canvas.rect(offsetLeft, offsetTop, 100, 20);
+            canvas.rect(winner.getLeftSide(), offsetTop, 100, 20);
 
             offsetTop += 21;
         }
@@ -222,12 +226,10 @@ public class VPaintGroup {
         canvas.closePath();
         canvas.stroke();
 
-        offsetLeft += 50;
-
         canvas.setStrokeStyle("rgb(10,255,0)");
         canvas.beginPath();
-        canvas.moveTo(offsetLeft, offsetTop);
-        canvas.lineTo(offsetLeft, finalBout.getTop() + 1);
+        canvas.moveTo(winner.getLeftSide() + 50, offsetTop);
+        canvas.lineTo(winner.getLeftSide() + 50, finalBout.getTop() + 1);
         canvas.closePath();
         canvas.stroke();
     }

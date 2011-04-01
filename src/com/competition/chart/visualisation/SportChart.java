@@ -16,10 +16,18 @@ public class SportChart extends AbstractComponent {
 
     private static final long serialVersionUID = -1405328596263886664L;
 
-    Map<String, List<Competitor>> data = new HashMap<String, List<Competitor>>();
-    String winner;
+    public enum VisualisationMode {
+        LEFT_RIGHT, LEFT_ONLY
+    }
+
+    private Map<String, List<Competitor>> data = new HashMap<String, List<Competitor>>();
+    private boolean left = false;
 
     public SportChart() {
+    }
+
+    public SportChart(VisualisationMode mode) {
+        setChartMode(mode);
     }
 
     public void addGroup(int groupNumber, String groupName,
@@ -28,8 +36,12 @@ public class SportChart extends AbstractComponent {
         data.put(id, participants);
     }
 
-    public void addWinner(String name) {
-        winner = name;
+    public void setChartMode(VisualisationMode mode) {
+        if (mode == VisualisationMode.LEFT_ONLY) {
+            left = true;
+        } else {
+            left = false;
+        }
     }
 
     @Override
@@ -42,7 +54,8 @@ public class SportChart extends AbstractComponent {
             StringBuilder values = new StringBuilder();
 
             for (Competitor person : persons) {
-                values.append(person.getName() + "_" + person.advancedTo());
+                values.append(person.getId() + "_" + person.getName() + "_"
+                        + person.advancedTo());
                 values.append(";");
             }
 
@@ -53,8 +66,8 @@ public class SportChart extends AbstractComponent {
             target.addAttribute("data", mmap);
         }
 
-        if (winner != null) {
-            target.addAttribute("winner", winner);
+        if (left) {
+            target.addAttribute("allOnLeft", true);
         }
     }
 
