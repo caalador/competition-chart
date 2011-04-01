@@ -22,8 +22,16 @@ public class SportChart extends AbstractComponent {
 
     private Map<String, List<Competitor>> data = new HashMap<String, List<Competitor>>();
     private boolean left = false;
+    private boolean enableDrag = false;
 
     public SportChart() {
+        setWidth("1400px");
+        setHeight("700px");
+    }
+
+    public SportChart(String width, String height) {
+        setWidth(width);
+        setHeight(height);
     }
 
     public SportChart(VisualisationMode mode) {
@@ -42,6 +50,10 @@ public class SportChart extends AbstractComponent {
         } else {
             left = false;
         }
+    }
+
+    public void setPanningEnabled(boolean panning) {
+        enableDrag = panning;
     }
 
     @Override
@@ -68,6 +80,10 @@ public class SportChart extends AbstractComponent {
 
         if (left) {
             target.addAttribute("allOnLeft", true);
+        }
+
+        if (enableDrag) {
+            target.addAttribute("enableDrag", true);
         }
     }
 

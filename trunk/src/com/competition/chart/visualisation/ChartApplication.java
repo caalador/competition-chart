@@ -57,6 +57,7 @@ public class ChartApplication extends Application {
         chart1.addGroup(7, "G sarja", group7);
         chart1.addGroup(8, "H sarja", group8);
         chart1.setChartMode(VisualisationMode.LEFT_ONLY);
+        chart1.setPanningEnabled(true);
         mainWindow.addComponent(chart1);
 
         // group1 = new LinkedList<String>();

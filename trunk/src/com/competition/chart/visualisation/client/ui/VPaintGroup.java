@@ -25,17 +25,19 @@ public class VPaintGroup {
         canvas.beginPath();
 
         HTML name = new HTML(group.getName());
-        displayPanel.add(name, group.getLeftSide() + 10, group.getTop() - 15);
+        displayPanel.add(name, (int) group.getLeftSide() + 10,
+                (int) group.getTop() - 15);
         names.add(name);
 
-        int offsetTop = group.getTop();
+        int offsetTop = (int) group.getTop();
 
         canvas.moveTo(group.getLeftSide(), offsetTop);
         for (int i = 0; i < group.getNames().size(); i++) {
             final VPerson p = group.getNames().get(i);
 
             name = new HTML(p.getName());
-            displayPanel.add(name, group.getLeftSide() + 10, offsetTop + 5);
+            displayPanel.add(name, (int) group.getLeftSide() + 10,
+                    offsetTop + 5);
             names.add(name);
 
             canvas.rect(group.getLeftSide(), offsetTop, 100, 20);
@@ -100,10 +102,11 @@ public class VPaintGroup {
         canvas.setLineWidth(1);
         canvas.beginPath();
 
-        int offsetTopRight = group.getTop();
+        int offsetTopRight = (int) group.getTop();
 
         HTML name = new HTML(group.getName());
-        displayPanel.add(name, group.getLeftSide() + 10, offsetTopRight - 15);
+        displayPanel.add(name, (int) group.getLeftSide() + 10,
+                offsetTopRight - 15);
         names.add(name);
 
         final int middleOfGroup = offsetTopRight
@@ -114,8 +117,8 @@ public class VPaintGroup {
             final VPerson p = group.getNames().get(i);
 
             name = new HTML(p.getName());
-            displayPanel
-                    .add(name, group.getLeftSide() + 10, offsetTopRight + 5);
+            displayPanel.add(name, (int) group.getLeftSide() + 10,
+                    offsetTopRight + 5);
             names.add(name);
 
             canvas.rect(group.getLeftSide(), offsetTopRight, 100, 20);
@@ -179,17 +182,19 @@ public class VPaintGroup {
         canvas.beginPath();
 
         HTML name = new HTML(group.getName());
-        displayPanel.add(name, group.getLeftSide() + 10, group.getTop() - 15);
+        displayPanel.add(name, (int) group.getLeftSide() + 10,
+                (int) group.getTop() - 15);
         names.add(name);
 
-        int offsetTop = group.getTop();
+        int offsetTop = (int) group.getTop();
 
         canvas.moveTo(group.getLeftSide(), offsetTop);
         for (int i = 0; i < group.getNames().size(); i++) {
             final VPerson p = group.getNames().get(i);
 
             name = new HTML(p.getName());
-            displayPanel.add(name, group.getLeftSide() + 10, offsetTop + 5);
+            displayPanel.add(name, (int) group.getLeftSide() + 10,
+                    offsetTop + 5);
             names.add(name);
 
             canvas.rect(group.getLeftSide(), offsetTop, 100, 20);
@@ -208,14 +213,15 @@ public class VPaintGroup {
         canvas.setLineWidth(1);
         canvas.beginPath();
 
-        int offsetTop = winner.getTop();
+        int offsetTop = (int) winner.getTop();
 
         canvas.moveTo(winner.getLeftSide(), offsetTop);
         for (int i = 0; i < winner.getNames().size(); i++) {
             final VPerson p = winner.getNames().get(i);
 
             HTML name = new HTML(p.getName());
-            displayPanel.add(name, winner.getLeftSide() + 10, offsetTop + 5);
+            displayPanel.add(name, (int) winner.getLeftSide() + 10,
+                    offsetTop + 5);
             names.add(name);
 
             canvas.rect(winner.getLeftSide(), offsetTop, 100, 20);
