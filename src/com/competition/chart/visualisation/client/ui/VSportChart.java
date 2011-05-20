@@ -169,6 +169,7 @@ public class VSportChart extends Widget implements Paintable {
         if (!groups.isEmpty()) {
             offsetLeft = 15;
             if (onlyLeft) {
+                winner = null;
                 positionsLeft();
                 buildChildGroupsFromLeft();
                 calculateChildPositions();
@@ -394,7 +395,8 @@ public class VSportChart extends Widget implements Paintable {
                 group.calculatePositionFromMiddle(bottom + (top - bottom) / 2);
                 if (winner != null && group == finalBout) {
                     winner.calculatePosition(group.getTop() - 40);
-                    winner.setLeftSide(finalBout.getLeftSide());
+                    winner.setLeftSide(group.getLeftSide());
+                    remove.add(winner);
                 }
                 remove.add(group);
             }
@@ -441,7 +443,6 @@ public class VSportChart extends Widget implements Paintable {
         }
     }
 
-    private int finalLeft;
     Map<Integer, Boolean> drawTier = new HashMap<Integer, Boolean>();
 
     private void drawChild(final VGroup childGroup) {
@@ -453,6 +454,7 @@ public class VSportChart extends Widget implements Paintable {
             paint.finalBout(finalBout);
             if (winner != null) {
                 paint.winner(winner, finalBout);
+                drawnGroups.add(winner);
             }
         } else {
             paint.left(childGroup);
@@ -564,6 +566,7 @@ public class VSportChart extends Widget implements Paintable {
             mouseDown = true;
             xDown = event.getClientX();
             yDown = event.getClientY();
+            Event.setCapture(getElement());
             break;
         case Event.ONMOUSEMOVE:
             if (!mouseDown) {
@@ -591,9 +594,6 @@ public class VSportChart extends Widget implements Paintable {
                 mouseDown = false;
                 int x = event.getClientX() - getAbsoluteLeft();
                 int y = event.getClientY() - getAbsoluteTop();
-                // Window.alert("Snap dragon\n" + event.getClientX() + "::"
-                // + event.getClientY() + "\n" + getAbsoluteTop());
-                // TODO: get person ID
                 for (VGroup group : drawnGroups) {
                     if (group.getLeftSide() < x
                             && x < group.getLeftSide() + BOX_WIDTH
@@ -610,7 +610,7 @@ public class VSportChart extends Widget implements Paintable {
                     }
                 }
             }
-        case Event.ONMOUSEOUT:
+            Event.releaseCapture(getElement());
             mouseMoved = false;
             mouseDown = false;
         }
