@@ -11,7 +11,7 @@ public class VPaintGroup {
     private final AbsolutePanel displayPanel;
     private final Canvas canvas;
     private final List<HTML> names;
-    private int BOX_WIDTH = VSportChart.BOX_WIDTH;
+    private int BOX_WIDTH = VKnockoutChart.BOX_WIDTH;
 
     public VPaintGroup(Canvas canvas, AbsolutePanel displayPanel,
             List<HTML> names) {
@@ -65,7 +65,7 @@ public class VPaintGroup {
         }
 
         /* next tier */
-        if (VSportChart.hasAdvance(group.getNames(), group.getTier() + 1)) {
+        if (VKnockoutChart.hasAdvance(group.getNames(), group.getTier() + 1)) {
             canvas.closePath();
             canvas.stroke();
             canvas.setStrokeStyle("rgb(10,255,0)");
@@ -148,7 +148,7 @@ public class VPaintGroup {
         }
 
         /* next tier */
-        if (VSportChart.hasAdvance(group.getNames(), group.getTier() + 1)) {
+        if (VKnockoutChart.hasAdvance(group.getNames(), group.getTier() + 1)) {
             canvas.closePath();
             canvas.stroke();
             canvas.setStrokeStyle("rgb(10,255,0)");

@@ -21,7 +21,7 @@ import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.ValueMap;
 
-public class VSportChart extends Widget implements Paintable {
+public class VKnockoutChart extends Widget implements Paintable {
 
     /** Set the CSS class name to allow styling. */
     public static final String CLASSNAME = "v-sportchart";
@@ -63,7 +63,7 @@ public class VSportChart extends Widget implements Paintable {
      * The constructor should first call super() to initialize the component and
      * then handle any initialization relevant to Vaadin.
      */
-    public VSportChart() {
+    public VKnockoutChart() {
         setElement(Document.get().createDivElement());
         setWidth("100%");
         setHeight("100%");
