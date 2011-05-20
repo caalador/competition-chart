@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.competition.chart.visualisation.SportChart.ValueSelectEvent;
-import com.competition.chart.visualisation.SportChart.ValueSelectListener;
-import com.competition.chart.visualisation.SportChart.VisualisationMode;
+import com.competition.chart.visualisation.KnockoutChart.ValueSelectEvent;
+import com.competition.chart.visualisation.KnockoutChart.ValueSelectListener;
+import com.competition.chart.visualisation.KnockoutChart.VisualisationMode;
 import com.vaadin.Application;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -18,98 +18,77 @@ public class ChartApplication extends Application {
 
     private static final long serialVersionUID = -5045489868340290821L;
 
-    private Map<Long, Competitor> participants = new HashMap<Long, Competitor>();
-    private SportChart chart1;
+    private Map<Integer, Competitor> participants = new HashMap<Integer, Competitor>();
+    private KnockoutChart knockoutChart;
 
     @Override
     public void init() {
         final Window mainWindow = new Window("Chart Application");
 
-        participants.put(1l, new Competitor(1, "Vepsäläinen Johan", 1));
-        participants.put(2l, new Competitor(2, "Otto Meri", 0));
-        participants.put(3l, new Competitor(3, "Moilanen Joonas", 0));
-        participants.put(4l, new Competitor(4, "Hellsten Simo", 0));
-        participants.put(5l, new Competitor(5, "Vilkama Voitto", 0));
-        participants.put(6l, new Competitor(6, "Roininen Tuomas", 1));
-        participants.put(7l, new Competitor(7, "Rupponen Pasi", 1));
-        participants.put(8l, new Competitor(8, "Korhonen Markku", 0));
-        participants.put(9l, new Competitor(9, "Malm Janne", 0));
-        participants.put(10l, new Competitor(10, "Marjola Kalle", 0));
-        participants.put(11l, new Competitor(11, "Shibata Minako", 0));
-        participants.put(12l, new Competitor(12, "Nieminen Vesa", 1));
+        participants.put(1, new Competitor(1, "Vepsäläinen Johan", 1));
+        participants.put(2, new Competitor(2, "Otto Meri", 0));
+        participants.put(3, new Competitor(3, "Moilanen Joonas", 0));
+        participants.put(4, new Competitor(4, "Hellsten Simo", 0));
+        participants.put(5, new Competitor(5, "Vilkama Voitto", 0));
+        participants.put(6, new Competitor(6, "Roininen Tuomas", 1));
+        participants.put(7, new Competitor(7, "Rupponen Pasi", 1));
+        participants.put(8, new Competitor(8, "Korhonen Markku", 0));
+        participants.put(9, new Competitor(9, "Malm Janne", 0));
+        participants.put(10, new Competitor(10, "Marjola Kalle", 0));
+        participants.put(11, new Competitor(11, "Shibata Minako", 0));
+        participants.put(12, new Competitor(12, "Nieminen Vesa", 1));
 
         List<Competitor> group1 = new LinkedList<Competitor>();
-        group1.add(participants.get(1l));
+        group1.add(participants.get(1));
 
         List<Competitor> group2 = new LinkedList<Competitor>();
-        group2.add(participants.get(2l));
-        group2.add(participants.get(3l));
+        group2.add(participants.get(2));
+        group2.add(participants.get(3));
 
         List<Competitor> group3 = new LinkedList<Competitor>();
-        group3.add(participants.get(4l));
-        group3.add(participants.get(5l));
+        group3.add(participants.get(4));
+        group3.add(participants.get(5));
 
         List<Competitor> group4 = new LinkedList<Competitor>();
-        group4.add(participants.get(6l));
+        group4.add(participants.get(6));
 
         List<Competitor> group5 = new LinkedList<Competitor>();
-        group5.add(participants.get(7l));
+        group5.add(participants.get(7));
 
         List<Competitor> group6 = new LinkedList<Competitor>();
-        group6.add(participants.get(8l));
-        group6.add(participants.get(9l));
+        group6.add(participants.get(8));
+        group6.add(participants.get(9));
 
-        List<Competitor> group7 = new LinkedList<Competitor>();
-        group7.add(participants.get(10l));
-        group7.add(participants.get(11l));
-
-        List<Competitor> group8 = new LinkedList<Competitor>();
-        group8.add(participants.get(12l));
-
-        chart1 = new SportChart();
-        chart1.addGroup(1, "A sarja", group1);
-        chart1.addGroup(2, "B sarja", group2);
-        chart1.addGroup(3, "C sarja", group3);
-        chart1.addGroup(4, "D sarja", group4);
-        chart1.addGroup(5, "E sarja", group5);
-        chart1.addGroup(6, "F sarja", group6);
-        chart1.addGroup(7, "G sarja", group7);
-        chart1.addGroup(8, "H sarja", group8);
-        // chart1.setChartMode(VisualisationMode.LEFT_ONLY);
-        chart1.setPanningEnabled(true);
-        chart1.addListener(vcl);
+        knockoutChart = new KnockoutChart();
+        knockoutChart.addGroup(1, "A sarja", group1);
+        knockoutChart.addGroup(2, "B sarja", group2);
+        knockoutChart.addGroup(3, "C sarja", group3);
+        knockoutChart.addGroup(4, "D sarja", group4);
+        knockoutChart.addGroup(5, "E sarja", group5);
+        knockoutChart.addGroup(6, "F sarja", group6);
+        knockoutChart.addGroup(7, "G sarja", participants.get(10),
+                participants.get(11));
+        knockoutChart.addGroup(8, "H sarja", participants.get(12));
+        knockoutChart.setPanningEnabled(true);
+        knockoutChart.addListener(vcl);
 
         final CheckBox left = new CheckBox("all on left");
         left.setImmediate(true);
         left.addListener(new ValueChangeListener() {
+            private static final long serialVersionUID = -347103891605131202L;
+
             public void valueChange(ValueChangeEvent event) {
                 if (left.booleanValue()) {
-                    chart1.setChartMode(VisualisationMode.LEFT_ONLY);
+                    knockoutChart.setChartMode(VisualisationMode.LEFT_ONLY);
                 } else {
-                    chart1.setChartMode(VisualisationMode.LEFT_RIGHT);
+                    knockoutChart.setChartMode(VisualisationMode.LEFT_RIGHT);
                 }
-                chart1.requestRepaint();
+                knockoutChart.requestRepaint();
             }
         });
 
         mainWindow.addComponent(left);
-        mainWindow.addComponent(chart1);
-
-        // group1 = new LinkedList<String>();
-        // group1.add("J. Kulmala_1");
-        // group1.add("W. Lindberg_0");
-        // group1.add("T. Lindros_0");
-        //
-        // group2 = new LinkedList<String>();
-        // group2.add("J. Lehtinen_0");
-        // group2.add("O. Nieminen_0");
-        // group2.add("S. Liipo_0");
-        //
-        // final SportChart chart2 = new SportChart();
-        // chart2.addGroup(1, "name 1", group1);
-        // chart2.addGroup(2, "name second", group2);
-        //
-        // mainWindow.addComponent(chart2);
+        mainWindow.addComponent(knockoutChart);
 
         setMainWindow(mainWindow);
     }
@@ -120,7 +99,7 @@ public class ChartApplication extends Application {
         public void valueSelect(ValueSelectEvent event) {
             Competitor c = participants.get(event.getKey());
             c.addAdvanced();
-            chart1.requestRepaint();
+            knockoutChart.requestRepaint();
         }
     };
 }

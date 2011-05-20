@@ -3,6 +3,7 @@ package com.competition.chart.visualisation;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,8 +15,8 @@ import com.vaadin.ui.Component;
 /**
  * Server side component for the VSportChart widget.
  */
-@com.vaadin.ui.ClientWidget(com.competition.chart.visualisation.client.ui.VSportChart.class)
-public class SportChart extends AbstractComponent {
+@com.vaadin.ui.ClientWidget(com.competition.chart.visualisation.client.ui.VKnockoutChart.class)
+public class KnockoutChart extends AbstractComponent {
 
     private static final long serialVersionUID = -1405328596263886664L;
 
@@ -28,19 +29,29 @@ public class SportChart extends AbstractComponent {
     private boolean enableDrag = false;
     private int boxWidth;
     private boolean sendBoxWidth = false;
+    private List<Integer> givenIds = new LinkedList<Integer>();
 
-    public SportChart() {
+    public KnockoutChart() {
         setWidth("1600px");
         setHeight("1200px");
     }
 
-    public SportChart(String width, String height) {
+    public KnockoutChart(String width, String height) {
         setWidth(width);
         setHeight(height);
     }
 
-    public SportChart(VisualisationMode mode) {
+    public KnockoutChart(VisualisationMode mode) {
         setChartMode(mode);
+    }
+
+    public void addGroup(int groupNumber, String groupName,
+            Competitor... participants) {
+        List<Competitor> competitors = new LinkedList<Competitor>();
+        for (Competitor c : participants) {
+            competitors.add(c);
+        }
+        addGroup(groupNumber, groupName, competitors);
     }
 
     public void addGroup(int groupNumber, String groupName,
@@ -175,6 +186,6 @@ public class SportChart extends AbstractComponent {
     }
 
     protected void fireValueSelect(Long key) {
-        fireEvent(new SportChart.ValueSelectEvent(this, key));
+        fireEvent(new KnockoutChart.ValueSelectEvent(this, key));
     }
 }
