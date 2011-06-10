@@ -296,7 +296,11 @@ public class VKnockoutChart extends Widget implements Paintable {
             finalBout.setLeftSide(offsetLeft);
         }
 
-        offsetLeft += tier * (BOX_WIDTH + 30);
+        int tiers = tier;
+        if (groups.size() % 2 == 1) {
+            tiers--;
+        }
+        offsetLeft += tiers * (BOX_WIDTH + 30);
         offsetLeft -= 10;
         n = onRight;
         parent = onLeft;
