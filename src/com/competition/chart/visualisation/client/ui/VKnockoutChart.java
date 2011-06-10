@@ -511,7 +511,8 @@ public class VKnockoutChart extends Widget implements Paintable {
         if (group.getNames().isEmpty()) {
             group.addName(new VPerson(-1, "", 0));
         }
-        if (group.getNames().size() == 1 && group != finalBout) {
+        if (group.getNames().size() == 1 && group != finalBout
+                && group.getParents().size() > 1) {
             group.addName(new VPerson(-1, "", 0));
         }
     }
