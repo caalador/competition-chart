@@ -49,7 +49,7 @@ public class VKnockoutChart extends Widget implements Paintable {
     private int offsetLeft = 15;
 
     private List<VGroup> drawnGroups = new LinkedList<VGroup>();
-    private boolean onlyLeft;
+    private boolean onlyLeft = false;
 
     public static int BOX_WIDTH = 125;
 
@@ -102,30 +102,36 @@ public class VKnockoutChart extends Widget implements Paintable {
         this.client = client;
         paintableId = uidl.getId();
 
-        if (uidl.hasAttribute("width")) {
-            width = uidl.getIntAttribute("width");
-
-            // Percentual width
-            if (uidl.hasAttribute("widthpercentage")) {
-                width = getElement().getParentElement().getClientWidth();
-            }
-
-            setCanvasWidth(width);
-        }
-        if (uidl.hasAttribute("height")) {
-            height = uidl.getIntAttribute("height");
-
-            // Percentual height
-            if (uidl.hasAttribute("heightpercentage")) {
-                height = getElement().getParentElement().getClientHeight();
-            }
-
-            setCanvasHeight(height);
-        }
+        // if (uidl.hasAttribute("width")) {
+        // width = uidl.getIntAttribute("width");
+        //
+        // // Percentual width
+        // if (uidl.hasAttribute("widthpercentage")) {
+        // width = getElement().getParentElement().getClientWidth();
+        // }
+        //
+        // setCanvasWidth(width);
+        // }
+        // if (uidl.hasAttribute("height")) {
+        // height = uidl.getIntAttribute("height");
+        //
+        // // Percentual height
+        // if (uidl.hasAttribute("heightpercentage")) {
+        // height = getElement().getParentElement().getClientHeight();
+        // }
+        //
+        // setCanvasHeight(height);
+        // }
 
         if (uidl.hasAttribute("allOnLeft")) {
+            if (!onlyLeft) {
+                groups.clear();
+            }
             onlyLeft = true;
         } else {
+            if (onlyLeft) {
+                groups.clear();
+            }
             onlyLeft = false;
         }
 
@@ -140,12 +146,26 @@ public class VKnockoutChart extends Widget implements Paintable {
             paint.setBoxWidth(BOX_WIDTH);
         }
 
+        boolean newData = false;
         if (uidl.hasAttribute("data")) {
-            groups.clear();
             final ValueMap map = uidl.getMapAttribute("data");
 
+            for (VGroup group : groups) {
+                if (!map.getKeySet().contains(group.getId()) && !newData) {
+                    newData = true;
+                    break;
+                }
+            }
+            if (groups.isEmpty() || uidl.hasAttribute("resetPositions")) {
+                newData = true;
+            }
+
+            if (newData) {
+                groups.clear();
+            }
+
             for (final String req2 : map.getKeySet()) {
-                final VGroup group = new VGroup(req2);
+                final VGroup group = getGroup(req2);
 
                 final String[] persons = map.getString(req2).split(";");
 
@@ -156,7 +176,6 @@ public class VKnockoutChart extends Widget implements Paintable {
                             Integer.parseInt(personData[2]));
                     group.addName(person);
                 }
-                groups.add(group);
             }
             Collections.sort(groups, new Comparator<VGroup>() {
                 public int compare(final VGroup o1, final VGroup o2) {
@@ -164,18 +183,23 @@ public class VKnockoutChart extends Widget implements Paintable {
                             .getNumber() < o2.getNumber() ? -1 : 1;
                 }
             });
+
         }
 
         if (!groups.isEmpty()) {
-            offsetLeft = 15;
+            if (newData) {
+                offsetLeft = 15;
+            } else {
+                offsetLeft = (int) groups.get(0).getLeftSide();
+            }
             if (onlyLeft) {
                 winner = null;
-                positionsLeft();
+                positionsLeft(newData);
                 buildChildGroupsFromLeft();
                 calculateChildPositions();
                 drawLeftChart();
             } else {
-                groupPositions();
+                groupPositions(newData);
                 buildChildGroups();
                 calculateChildPositions();
                 drawChart();
@@ -183,7 +207,26 @@ public class VKnockoutChart extends Widget implements Paintable {
         }
     }
 
-    private void groupPositions() {
+    /**
+     * Get group if exists or create new one if one doesn't
+     * 
+     * @param id
+     * @return
+     */
+    private VGroup getGroup(String id) {
+        for (VGroup g : groups) {
+            if (g.getId().equals(id)) {
+                return g;
+            }
+        }
+
+        VGroup group = new VGroup(id);
+        groups.add(group);
+
+        return group;
+    }
+
+    private void groupPositions(boolean calculateTop) {
         float top = 35;
 
         onLeft = groups.size() / 2 + groups.size() % 2;
@@ -194,17 +237,21 @@ public class VKnockoutChart extends Widget implements Paintable {
             if (i == onLeft) {
                 top = 35;
             }
-            top = group.calculatePosition(top);
+            if (calculateTop) {
+                top = group.calculatePosition(top);
+            }
             group.setLeftSide(offsetLeft);
         }
     }
 
-    private void positionsLeft() {
+    private void positionsLeft(boolean calculateTop) {
         float top = 35;
 
         for (int i = 0; i < groups.size(); i++) {
             VGroup group = groups.get(i);
-            top = group.calculatePosition(top);
+            if (calculateTop) {
+                top = group.calculatePosition(top);
+            }
             group.setLeftSide(offsetLeft);
         }
     }
@@ -226,7 +273,7 @@ public class VKnockoutChart extends Widget implements Paintable {
                 targetGroup.get(parent).setChildGroup(child);
                 addAdvanced(child, targetGroup.get(parent).getNames());
                 child.addParent(targetGroup.get(parent++));
-                if (groups.size() > parent) {
+                if (targetGroup.size() > parent) {
                     targetGroup.get(parent).setChildGroup(child);
                     addAdvanced(child, targetGroup.get(parent).getNames());
                     child.addParent(targetGroup.get(parent++));
@@ -257,6 +304,7 @@ public class VKnockoutChart extends Widget implements Paintable {
         int nextID = groups.get(groups.size() - 1).getNumber() + 1;
 
         int n = onLeft;
+        int maxTier = 1;
         int tier = 1;
         int parent = 0;
         VGroup lastChild = groups.get(0);
@@ -296,6 +344,7 @@ public class VKnockoutChart extends Widget implements Paintable {
             finalBout.setLeftSide(offsetLeft);
         }
 
+        maxTier = tier;
         int tiers = tier;
         if (groups.size() % 2 == 1) {
             tiers--;
@@ -335,6 +384,20 @@ public class VKnockoutChart extends Widget implements Paintable {
             parent = 0;
             tier++;
         }
+        // if right side has less groups than left side.
+        if (maxTier != tier) {
+            // for (VGroup parentGroup : finalBout.getParents()) {
+            if (lastChild.getLeftSide() > finalBout.getLeftSide()) {
+                for (VPerson p : lastChild.getNames()) {
+                    if (p.advancedTo() == tier) {
+                        p.advancedToTier++;
+                    } else if (p.advancedTo() == tier + 1) {
+                        p.advancedToTier += 2;
+                    }
+                }
+            }
+        }
+        // }
         if (n == 1 || onRight == 1) {
             if (onRight == 1) {
                 final VGroup parentGroup = groups.get(parent);
@@ -347,8 +410,8 @@ public class VKnockoutChart extends Widget implements Paintable {
                 addAdvanced(finalBout, lastChild.getNames());
             }
         }
-        if (hasAdvance(finalBout.getNames(), tier + 1)) {
-            winner = new VGroup("99_ _" + (tier + 1));
+        if (hasAdvance(finalBout.getNames(), maxTier + 1)) {
+            winner = new VGroup("99_ _" + (maxTier + 1));
             addAdvanced(winner, finalBout.getNames());
         }
         fillGroup(finalBout);

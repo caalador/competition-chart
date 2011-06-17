@@ -64,11 +64,11 @@ public class ChartApplication extends Application {
         knockoutChart.addGroup(2, "B sarja", group2);
         knockoutChart.addGroup(3, "C sarja", group3);
         knockoutChart.addGroup(4, "D sarja", group4);
-        knockoutChart.addGroup(5, "E sarja", group5);
-        knockoutChart.addGroup(6, "F sarja", group6);
+        // knockoutChart.addGroup(5, "E sarja", group5);
+        // knockoutChart.addGroup(6, "F sarja", group6);
         knockoutChart.addGroup(7, "G sarja", participants.get(10),
                 participants.get(11));
-        knockoutChart.addGroup(8, "H sarja", participants.get(12));
+        // knockoutChart.addGroup(8, "H sarja", participants.get(12));
         knockoutChart.setPanningEnabled(true);
         knockoutChart.addListener(vcl);
 
@@ -97,7 +97,8 @@ public class ChartApplication extends Application {
         private static final long serialVersionUID = 1835799531600547425L;
 
         public void valueSelect(ValueSelectEvent event) {
-            Competitor c = participants.get(event.getKey());
+            Competitor c = participants.get(Integer.parseInt(Long
+                    .toString(event.getKey())));
             c.addAdvanced();
             knockoutChart.requestRepaint();
         }
