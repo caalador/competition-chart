@@ -29,6 +29,7 @@ public class KnockoutChart extends AbstractComponent {
     private boolean enableDrag = false;
     private int boxWidth;
     private boolean sendBoxWidth = false;
+    private boolean reset = false;
     private List<Integer> givenIds = new LinkedList<Integer>();
 
     public KnockoutChart() {
@@ -110,6 +111,11 @@ public class KnockoutChart extends AbstractComponent {
         if (sendBoxWidth) {
             target.addAttribute("boxWidth", boxWidth);
         }
+
+        if (reset) {
+            target.addAttribute("resetPositions", true);
+            reset = false;
+        }
     }
 
     @Override
@@ -136,6 +142,10 @@ public class KnockoutChart extends AbstractComponent {
             }
         }
         return false;
+    }
+
+    public void resetChartPositions() {
+        reset = true;
     }
 
     private static final Method VALUE_SELECTION_EVENT;

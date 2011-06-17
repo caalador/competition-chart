@@ -22,4 +22,12 @@ public class VPerson {
     public long getId() {
         return id;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof VPerson) {
+            return ((VPerson) o).getId() == id;
+        }
+        return false;
+    }
 }

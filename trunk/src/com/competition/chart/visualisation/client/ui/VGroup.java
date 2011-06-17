@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class VGroup {
+    private final String id;
     private String name;
     private int number;
     private int tier = 0;
@@ -15,12 +16,17 @@ public class VGroup {
     private boolean hasPosition = false;
 
     public VGroup(String id) {
+        this.id = id;
         String[] idString = id.split("_");
         number = Integer.parseInt(idString[0]);
         name = idString[1];
         if (idString.length == 3) {
             tier = Integer.parseInt(idString[2]);
         }
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getName() {
@@ -48,7 +54,17 @@ public class VGroup {
     }
 
     public void addName(VPerson name) {
-        names.add(name);
+        if (!names.contains(name)) {
+            names.add(name);
+        } else {
+            for (VPerson p : names) {
+                if (p.equals(name)) {
+                    names.remove(p);
+                    names.add(name);
+                    break;
+                }
+            }
+        }
     }
 
     public List<VPerson> getNames() {
