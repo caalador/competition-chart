@@ -8,16 +8,16 @@ public class VGroup {
     private String name;
     private int number;
     private int tier = 0;
-    private List<VPerson> names = new LinkedList<VPerson>();
+    private final List<VPerson> names = new LinkedList<VPerson>();
     private VGroup childGroup = null;
-    private List<VGroup> parents = new LinkedList<VGroup>();
+    private final List<VGroup> parents = new LinkedList<VGroup>();
     private float middleOfGroup, top, bottom, leftSide;
 
     private boolean hasPosition = false;
 
-    public VGroup(String id) {
+    public VGroup(final String id) {
         this.id = id;
-        String[] idString = id.split("_");
+        final String[] idString = id.split("_");
         number = Integer.parseInt(idString[0]);
         name = idString[1];
         if (idString.length == 3) {
@@ -33,7 +33,7 @@ public class VGroup {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -41,7 +41,7 @@ public class VGroup {
         return number;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(final int number) {
         this.number = number;
     }
 
@@ -49,15 +49,15 @@ public class VGroup {
         return tier;
     }
 
-    public void setTier(int tier) {
+    public void setTier(final int tier) {
         this.tier = tier;
     }
 
-    public void addName(VPerson name) {
+    public void addName(final VPerson name) {
         if (!names.contains(name)) {
             names.add(name);
         } else {
-            for (VPerson p : names) {
+            for (final VPerson p : names) {
                 if (p.equals(name)) {
                     names.remove(p);
                     names.add(name);
@@ -71,7 +71,7 @@ public class VGroup {
         return names;
     }
 
-    public void setChildGroup(VGroup child) {
+    public void setChildGroup(final VGroup child) {
         childGroup = child;
     }
 
@@ -79,7 +79,7 @@ public class VGroup {
         return childGroup;
     }
 
-    public void addParent(VGroup parent) {
+    public void addParent(final VGroup parent) {
         parents.add(parent);
     }
 
@@ -103,11 +103,11 @@ public class VGroup {
         return leftSide;
     }
 
-    public void setLeftSide(float leftSide) {
+    public void setLeftSide(final float leftSide) {
         this.leftSide = leftSide;
     }
 
-    public float calculatePosition(float offsetTop) {
+    public float calculatePosition(final float offsetTop) {
         top = offsetTop;
         bottom = offsetTop + (20 * names.size());
         middleOfGroup = top + (bottom - top) / 2;
@@ -115,9 +115,15 @@ public class VGroup {
         return bottom + 20;
     }
 
-    public void calculatePositionFromMiddle(float middleOfGroup) {
+    public void updatePosition(final float offset) {
+        top += offset;
+        bottom += offset;
+        middleOfGroup += offset;
+    }
+
+    public void calculatePositionFromMiddle(final float middleOfGroup) {
         this.middleOfGroup = middleOfGroup;
-        int namesSizeHalved = 20 * names.size() / 2;
+        final int namesSizeHalved = 20 * names.size() / 2;
         top = middleOfGroup - namesSizeHalved;
         bottom = middleOfGroup + namesSizeHalved;
         hasPosition = true;
@@ -128,7 +134,7 @@ public class VGroup {
     }
 
     public boolean hasCompetitors() {
-        for (VPerson p : names) {
+        for (final VPerson p : names) {
             if (p.getName().length() > 0 && p.advancedTo() > 0) {
                 return true;
             }

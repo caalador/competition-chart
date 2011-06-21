@@ -10,6 +10,11 @@ import java.util.Map;
 
 import com.competition.chart.visualisation.client.ui.canvas.client.Canvas;
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.mobile.client.Touch;
+import com.google.gwt.mobile.client.TouchEvent;
+import com.google.gwt.mobile.client.TouchHandler;
+import com.google.gwt.mobile.client.TouchHandler.DragDelegate;
+import com.google.gwt.mobile.client.TouchHandler.TouchDelegate;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
@@ -21,7 +26,8 @@ import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.ValueMap;
 
-public class VKnockoutChart extends Widget implements Paintable {
+public class VKnockoutChart extends Widget implements Paintable, TouchDelegate,
+        DragDelegate {
 
     /** Set the CSS class name to allow styling. */
     public static final String CLASSNAME = "v-sportchart";
@@ -44,11 +50,11 @@ public class VKnockoutChart extends Widget implements Paintable {
     // private String winner = null;
     private int onLeft, onRight;
 
-    private List<HTML> names = new LinkedList<HTML>();
+    private final List<HTML> names = new LinkedList<HTML>();
 
     private int offsetLeft = 15;
 
-    private List<VGroup> drawnGroups = new LinkedList<VGroup>();
+    private final List<VGroup> drawnGroups = new LinkedList<VGroup>();
     private boolean onlyLeft = false;
 
     public static int BOX_WIDTH = 125;
@@ -59,6 +65,8 @@ public class VKnockoutChart extends Widget implements Paintable {
 
     private int width, height;
 
+    private TouchHandler touchHandler;
+
     /**
      * The constructor should first call super() to initialize the component and
      * then handle any initialization relevant to Vaadin.
@@ -68,6 +76,12 @@ public class VKnockoutChart extends Widget implements Paintable {
         setWidth("100%");
         setHeight("100%");
 
+        if (TouchHandler.supportsTouch()) {
+            touchHandler = new TouchHandler(getElement());
+            touchHandler.setDragDelegate(this);
+            touchHandler.setTouchDelegate(this);
+            touchHandler.enable();
+        }
         sinkEvents(Event.MOUSEEVENTS);
 
         setStyleName(CLASSNAME);
@@ -102,26 +116,26 @@ public class VKnockoutChart extends Widget implements Paintable {
         this.client = client;
         paintableId = uidl.getId();
 
-        // if (uidl.hasAttribute("width")) {
-        // width = uidl.getIntAttribute("width");
-        //
-        // // Percentual width
-        // if (uidl.hasAttribute("widthpercentage")) {
-        // width = getElement().getParentElement().getClientWidth();
-        // }
-        //
-        // setCanvasWidth(width);
-        // }
-        // if (uidl.hasAttribute("height")) {
-        // height = uidl.getIntAttribute("height");
-        //
-        // // Percentual height
-        // if (uidl.hasAttribute("heightpercentage")) {
-        // height = getElement().getParentElement().getClientHeight();
-        // }
-        //
-        // setCanvasHeight(height);
-        // }
+        if (uidl.hasAttribute("width")) {
+            width = uidl.getIntAttribute("width");
+
+            // Percentual width
+            if (uidl.hasAttribute("widthpercentage")) {
+                width = getElement().getParentElement().getClientWidth();
+            }
+
+            setCanvasWidth(width);
+        }
+        if (uidl.hasAttribute("height")) {
+            height = uidl.getIntAttribute("height");
+
+            // Percentual height
+            if (uidl.hasAttribute("heightpercentage")) {
+                height = getElement().getParentElement().getClientHeight();
+            }
+
+            setCanvasHeight(height);
+        }
 
         if (uidl.hasAttribute("allOnLeft")) {
             if (!onlyLeft) {
@@ -150,7 +164,7 @@ public class VKnockoutChart extends Widget implements Paintable {
         if (uidl.hasAttribute("data")) {
             final ValueMap map = uidl.getMapAttribute("data");
 
-            for (VGroup group : groups) {
+            for (final VGroup group : groups) {
                 if (!map.getKeySet().contains(group.getId()) && !newData) {
                     newData = true;
                     break;
@@ -213,27 +227,27 @@ public class VKnockoutChart extends Widget implements Paintable {
      * @param id
      * @return
      */
-    private VGroup getGroup(String id) {
-        for (VGroup g : groups) {
+    private VGroup getGroup(final String id) {
+        for (final VGroup g : groups) {
             if (g.getId().equals(id)) {
                 return g;
             }
         }
 
-        VGroup group = new VGroup(id);
+        final VGroup group = new VGroup(id);
         groups.add(group);
 
         return group;
     }
 
-    private void groupPositions(boolean calculateTop) {
+    private void groupPositions(final boolean calculateTop) {
         float top = 35;
 
         onLeft = groups.size() / 2 + groups.size() % 2;
         onRight = groups.size() - onLeft;
 
         for (int i = 0; i < groups.size(); i++) {
-            VGroup group = groups.get(i);
+            final VGroup group = groups.get(i);
             if (i == onLeft) {
                 top = 35;
             }
@@ -244,11 +258,11 @@ public class VKnockoutChart extends Widget implements Paintable {
         }
     }
 
-    private void positionsLeft(boolean calculateTop) {
+    private void positionsLeft(final boolean calculateTop) {
         float top = 35;
 
         for (int i = 0; i < groups.size(); i++) {
-            VGroup group = groups.get(i);
+            final VGroup group = groups.get(i);
             if (calculateTop) {
                 top = group.calculatePosition(top);
             }
@@ -388,7 +402,7 @@ public class VKnockoutChart extends Widget implements Paintable {
         if (maxTier != tier) {
             // for (VGroup parentGroup : finalBout.getParents()) {
             if (lastChild.getLeftSide() > finalBout.getLeftSide()) {
-                for (VPerson p : lastChild.getNames()) {
+                for (final VPerson p : lastChild.getNames()) {
                     if (p.advancedTo() == tier) {
                         p.advancedToTier++;
                     } else if (p.advancedTo() == tier + 1) {
@@ -418,9 +432,9 @@ public class VKnockoutChart extends Widget implements Paintable {
     }
 
     private void calculateChildPositions() {
-        List<VGroup> allGroups = new LinkedList<VGroup>();
+        final List<VGroup> allGroups = new LinkedList<VGroup>();
 
-        for (VGroup group : groups) {
+        for (final VGroup group : groups) {
             VGroup child = group;
             while (child.getChildGroup() != null) {
                 child = child.getChildGroup();
@@ -438,12 +452,12 @@ public class VKnockoutChart extends Widget implements Paintable {
 
     }
 
-    private boolean calculatePosition(List<VGroup> allGroups) {
-        List<VGroup> remove = new ArrayList<VGroup>();
+    private boolean calculatePosition(final List<VGroup> allGroups) {
+        final List<VGroup> remove = new ArrayList<VGroup>();
 
-        for (VGroup group : allGroups) {
+        for (final VGroup group : allGroups) {
             boolean allParentsHavePosition = true;
-            for (VGroup parent : group.getParents()) {
+            for (final VGroup parent : group.getParents()) {
                 if (!parent.hasPosition()) {
                     allParentsHavePosition = false;
                 }
@@ -451,7 +465,7 @@ public class VKnockoutChart extends Widget implements Paintable {
             if (allParentsHavePosition) {
                 float bottom = Float.MAX_VALUE;
                 float top = 0;
-                for (VGroup parent : group.getParents()) {
+                for (final VGroup parent : group.getParents()) {
                     if (parent.getBottom() < bottom) {
                         bottom = parent.getBottom();
                     }
@@ -501,7 +515,7 @@ public class VKnockoutChart extends Widget implements Paintable {
 
         canvas.clear();
 
-        for (VGroup group : groups) {
+        for (final VGroup group : groups) {
             paint.left(group);
             drawnGroups.add(group);
             if (group.getChildGroup() != null) {
@@ -553,7 +567,8 @@ public class VKnockoutChart extends Widget implements Paintable {
         }
     }
 
-    public static boolean hasAdvance(final List<VPerson> persons, int toTier) {
+    public static boolean hasAdvance(final List<VPerson> persons,
+            final int toTier) {
         for (final VPerson p : persons) {
             if (p.advancedTo() >= toTier) {
                 return true;
@@ -570,7 +585,7 @@ public class VKnockoutChart extends Widget implements Paintable {
         }
     }
 
-    private void fillGroup(VGroup group) {
+    private void fillGroup(final VGroup group) {
         if (group.getNames().isEmpty()) {
             group.addName(new VPerson(-1, "", 0));
         }
@@ -621,10 +636,10 @@ public class VKnockoutChart extends Widget implements Paintable {
         }
     }
 
-    int xDown = 0, yDown = 0;
+    float xDown = 0, yDown = 0;
 
     @Override
-    public void onBrowserEvent(Event event) {
+    public void onBrowserEvent(final Event event) {
         if (paintableId == null || client == null || !enableDragging) {
             return;
         }
@@ -641,13 +656,13 @@ public class VKnockoutChart extends Widget implements Paintable {
                 break;
             }
             mouseMoved = true;
-            int xChange = event.getClientX() - xDown;
-            int yChange = event.getClientY() - yDown;
+            final float xChange = event.getClientX() - xDown;
+            final float yChange = event.getClientY() - yDown;
 
             xDown = event.getClientX();
             yDown = event.getClientY();
-            for (VGroup group : drawnGroups) {
-                group.calculatePosition(group.getTop() + yChange);
+            for (final VGroup group : drawnGroups) {
+                group.updatePosition(yChange);
                 group.setLeftSide(group.getLeftSide() + xChange);
             }
             if (onlyLeft) {
@@ -660,17 +675,17 @@ public class VKnockoutChart extends Widget implements Paintable {
             if (!mouseMoved) {
                 mouseMoved = false;
                 mouseDown = false;
-                int x = event.getClientX() - getAbsoluteLeft();
-                int y = event.getClientY() - getAbsoluteTop();
-                for (VGroup group : drawnGroups) {
+                final int x = event.getClientX() - getAbsoluteLeft();
+                final int y = event.getClientY() - getAbsoluteTop();
+                for (final VGroup group : drawnGroups) {
                     if (group.getLeftSide() < x
                             && x < group.getLeftSide() + BOX_WIDTH
                             && group.getTop() < y && y < group.getBottom()) {
                         try {
-                            VPerson person = group.getNames().get(
+                            final VPerson person = group.getNames().get(
                                     (int) (y - group.getTop()) / 20);
                             valueSelect(Long.toString(person.getId()));
-                        } catch (IndexOutOfBoundsException ioob) {
+                        } catch (final IndexOutOfBoundsException ioob) {
                             Window.alert("Problem finding person");
                             // Failed to find user
                         }
@@ -684,7 +699,47 @@ public class VKnockoutChart extends Widget implements Paintable {
         }
     }
 
-    public void valueSelect(String value) {
+    public void valueSelect(final String value) {
         client.updateVariable(paintableId, "selected", value, true);
+    }
+
+    public void onDragEnd(final TouchEvent e) {
+    }
+
+    public void onDragMove(final TouchEvent e) {
+        mouseMoved = true;
+
+        final Touch touch = TouchHandler.getTouchFromEvent(e);
+        final float xChange = (float) touch.getPageX() - xDown;
+        final float yChange = (float) touch.getPageY() - yDown;
+
+        xDown = (float) touch.getPageX();
+        yDown = (float) touch.getPageY();
+
+        for (final VGroup group : drawnGroups) {
+            group.updatePosition(yChange);
+            group.setLeftSide(group.getLeftSide() + xChange);
+        }
+
+        if (onlyLeft) {
+            drawLeftChart();
+        } else {
+            drawChart();
+        }
+    }
+
+    public void onDragStart(final TouchEvent e) {
+        final Touch touch = TouchHandler.getTouchFromEvent(e);
+        xDown = (float) touch.getPageX();
+        yDown = (float) touch.getPageY();
+    }
+
+    public void onTouchEnd(final TouchEvent e) {
+        mouseMoved = false;
+    }
+
+    public boolean onTouchStart(final TouchEvent e) {
+        // Returning true here indicates that we are accepting a drag sequence.
+        return true;
     }
 }
