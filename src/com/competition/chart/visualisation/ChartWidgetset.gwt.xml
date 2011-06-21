@@ -6,5 +6,7 @@
 	<stylesheet src="chart/styles.css" />
 	
 	<inherits name="com.competition.chart.visualisation.client.ui.canvas.gwt-canvas" />
+	
+	<inherits name="com.google.gwt.mobile.Mobile" />
 
 </module>
