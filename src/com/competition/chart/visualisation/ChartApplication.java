@@ -25,7 +25,7 @@ public class ChartApplication extends Application {
 	public void init() {
 		final Window mainWindow = new Window("Chart Application");
 
-		participants.put(1, new Competitor(1, "Veps√§l√§inen Johan", 1));
+		participants.put(1, new Competitor(1, "Vepsäläinen Johan", 1));
 		participants.put(2, new Competitor(2, "Otto Meri", 0));
 		participants.put(3, new Competitor(3, "Moilanen Joonas", 0));
 		participants.put(4, new Competitor(4, "Hellsten Simo", 0));
@@ -88,7 +88,6 @@ public class ChartApplication extends Application {
 		left.addListener(new ValueChangeListener() {
 			private static final long serialVersionUID = -347103891605131202L;
 
-			@Override
 			public void valueChange(final ValueChangeEvent event) {
 				if (left.booleanValue()) {
 					knockoutChart.setChartMode(VisualisationMode.LEFT_ONLY);
@@ -108,7 +107,6 @@ public class ChartApplication extends Application {
 	private final ValueSelectListener vcl = new ValueSelectListener() {
 		private static final long serialVersionUID = 1835799531600547425L;
 
-		@Override
 		public void valueSelect(final ValueSelectEvent event) {
 			final Competitor c = participants.get(Integer.parseInt(Long.toString(event.getKey())));
 			c.addAdvanced();
