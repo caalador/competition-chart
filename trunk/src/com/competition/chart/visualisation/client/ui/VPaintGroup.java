@@ -2,250 +2,229 @@ package com.competition.chart.visualisation.client.ui;
 
 import java.util.List;
 
-import com.competition.chart.visualisation.client.ui.canvas.client.Canvas;
-import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.canvas.client.Canvas;
+import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.user.client.ui.HTML;
 
 public class VPaintGroup {
 
-    private final AbsolutePanel displayPanel;
-    private final Canvas canvas;
-    private final List<HTML> names;
-    private int BOX_WIDTH = VKnockoutChart.BOX_WIDTH;
+	private final Canvas canvas;
+	private final List<HTML> names;
+	private int BOX_WIDTH = VKnockoutChart.BOX_WIDTH;
 
-    public VPaintGroup(Canvas canvas, AbsolutePanel displayPanel,
-            List<HTML> names) {
-        this.canvas = canvas;
-        this.displayPanel = displayPanel;
-        this.names = names;
-    }
+	public VPaintGroup(final Canvas canvas, final List<HTML> names) {
+		this.canvas = canvas;
+		this.names = names;
+	}
 
-    public void left(VGroup group) {
-        canvas.setStrokeStyle("rgb(0,0,0)");
-        canvas.setLineWidth(1);
-        canvas.beginPath();
+	public void left(final VGroup group) {
+		final Context2d context = canvas.getContext2d();
 
-        HTML name = new HTML(group.getName());
-        displayPanel.add(name, (int) group.getLeftSide() + 10,
-                (int) group.getTop() - 15);
-        names.add(name);
+		context.setStrokeStyle("rgb(0,0,0)");
+		context.setLineWidth(1);
 
-        int offsetTop = (int) group.getTop();
+		context.beginPath();
 
-        canvas.moveTo(group.getLeftSide(), offsetTop);
-        for (int i = 0; i < group.getNames().size(); i++) {
-            final VPerson p = group.getNames().get(i);
+		context.setFont("14px Arial");
+		context.fillText(group.getName(), (double) group.getLeftSide() + 10, (double) group.getTop() - 5);
 
-            name = new HTML(p.getName());
-            displayPanel
-                    .add(name, (int) group.getLeftSide() + 5, offsetTop + 5);
-            names.add(name);
+		int offsetTop = (int) group.getTop();
 
-            canvas.rect(group.getLeftSide(), offsetTop, BOX_WIDTH, 20);
+		context.moveTo(group.getLeftSide(), offsetTop);
+		for (int i = 0; i < group.getNames().size(); i++) {
+			final VPerson p = group.getNames().get(i);
 
-            if (p.advancedTo() >= group.getTier() + 1) {
-                canvas.closePath();
-                canvas.stroke();
-                canvas.setStrokeStyle("rgb(10,255,0)");
-                canvas.beginPath();
-            }
-            canvas.moveTo(group.getLeftSide() + BOX_WIDTH, offsetTop + 10);
-            canvas.lineTo(group.getLeftSide() + BOX_WIDTH + 10, offsetTop + 10);
+			context.fillText(p.getName(), (double) group.getLeftSide() + 5, (double) offsetTop + 15, BOX_WIDTH - 5);
 
-            canvas.lineTo(group.getLeftSide() + BOX_WIDTH + 10,
-                    group.getMiddleOfGroup());
+			context.rect(group.getLeftSide(), offsetTop, BOX_WIDTH, 20);
 
-            canvas.moveTo(group.getLeftSide(), offsetTop);
-            canvas.closePath();
-            canvas.stroke();
-            canvas.setStrokeStyle("rgb(0,0,0)");
-            canvas.beginPath();
+			if (p.advancedTo() >= group.getTier() + 1) {
+				context.closePath();
+				context.stroke();
+				context.setStrokeStyle("rgb(10,255,0)");
+				context.beginPath();
+			}
+			context.moveTo(group.getLeftSide() + BOX_WIDTH, offsetTop + 10);
+			context.lineTo(group.getLeftSide() + BOX_WIDTH + 10, offsetTop + 10);
 
-            offsetTop += 20;
-        }
+			context.lineTo(group.getLeftSide() + BOX_WIDTH + 10, group.getMiddleOfGroup());
 
-        /* next tier */
-        if (VKnockoutChart.hasAdvance(group.getNames(), group.getTier() + 1)) {
-            canvas.closePath();
-            canvas.stroke();
-            canvas.setStrokeStyle("rgb(10,255,0)");
-            canvas.beginPath();
-        }
+			context.moveTo(group.getLeftSide(), offsetTop);
+			context.closePath();
+			context.stroke();
+			context.setStrokeStyle("rgb(0,0,0)");
+			context.beginPath();
 
-        if (group.getChildGroup() != null) {
-            canvas.moveTo(group.getLeftSide() + BOX_WIDTH + 10,
-                    group.getMiddleOfGroup());
-            canvas.lineTo(group.getLeftSide() + BOX_WIDTH + 20,
-                    group.getMiddleOfGroup());
+			offsetTop += 20;
+		}
 
-            canvas.lineTo(group.getLeftSide() + BOX_WIDTH + 20, group
-                    .getChildGroup().getMiddleOfGroup());
-        }
+		/* next tier */
+		if (VKnockoutChart.hasAdvance(group.getNames(), group.getTier() + 1)) {
+			context.closePath();
+			context.stroke();
+			context.setStrokeStyle("rgb(10,255,0)");
+			context.beginPath();
+		}
 
-        if (group.getParents().size() > 0) {
-            canvas.moveTo(0, 0);
-            canvas.closePath();
-            canvas.stroke();
-            if (group.hasCompetitors()) {
-                canvas.setStrokeStyle("rgb(10,255,0)");
-                canvas.beginPath();
-            } else {
-                canvas.beginPath();
-            }
-            canvas.moveTo(group.getLeftSide(), group.getMiddleOfGroup());
-            canvas.lineTo(group.getLeftSide() - 10, group.getMiddleOfGroup());
+		if (group.getChildGroup() != null) {
+			context.moveTo(group.getLeftSide() + BOX_WIDTH + 10, group.getMiddleOfGroup());
+			context.lineTo(group.getLeftSide() + BOX_WIDTH + 20, group.getMiddleOfGroup());
 
-        }
-        canvas.moveTo(0, 0);
-        canvas.closePath();
-        canvas.stroke();
-    }
+			context.lineTo(group.getLeftSide() + BOX_WIDTH + 20, group.getChildGroup().getMiddleOfGroup());
+		}
 
-    public void right(VGroup group) {
-        canvas.setStrokeStyle("rgb(0,0,0)");
-        canvas.setLineWidth(1);
-        canvas.beginPath();
+		if (group.getParents().size() > 0) {
+			context.moveTo(0, 0);
+			context.closePath();
+			context.stroke();
+			if (group.hasCompetitors()) {
+				context.setStrokeStyle("rgb(10,255,0)");
+				context.beginPath();
+			} else {
+				context.beginPath();
+			}
+			context.moveTo(group.getLeftSide(), group.getMiddleOfGroup());
+			context.lineTo(group.getLeftSide() - 10, group.getMiddleOfGroup());
 
-        int offsetTopRight = (int) group.getTop();
+		}
+		context.moveTo(0, 0);
+		context.closePath();
+		context.stroke();
+	}
 
-        HTML name = new HTML(group.getName());
-        displayPanel.add(name, (int) group.getLeftSide() + 10,
-                offsetTopRight - 15);
-        names.add(name);
+	public void right(final VGroup group) {
+		final Context2d context = canvas.getContext2d();
 
-        final int middleOfGroup = offsetTopRight
-                + (group.getNames().size() * 20) / 2;
+		context.setStrokeStyle("rgb(0,0,0)");
+		context.setLineWidth(1);
+		context.beginPath();
 
-        canvas.moveTo(group.getLeftSide(), offsetTopRight);
-        for (int i = 0; i < group.getNames().size(); i++) {
-            final VPerson p = group.getNames().get(i);
+		int offsetTopRight = (int) group.getTop();
 
-            name = new HTML(p.getName());
-            displayPanel.add(name, (int) group.getLeftSide() + 5,
-                    offsetTopRight + 5);
-            names.add(name);
+		context.setFont("14px Arial");
+		context.fillText(group.getName(), (double) group.getLeftSide() + 10, (double) group.getTop() - 5);
 
-            canvas.rect(group.getLeftSide(), offsetTopRight, BOX_WIDTH, 20);
+		final int middleOfGroup = offsetTopRight + (group.getNames().size() * 20) / 2;
 
-            if (p.advancedTo() >= group.getTier() + 1) {
-                canvas.closePath();
-                canvas.stroke();
-                canvas.setStrokeStyle("rgb(10,255,0)");
-                canvas.beginPath();
-            }
-            canvas.moveTo(group.getLeftSide(), offsetTopRight + 10);
-            canvas.lineTo(group.getLeftSide() - 10, offsetTopRight + 10);
+		context.moveTo(group.getLeftSide(), offsetTopRight);
+		for (int i = 0; i < group.getNames().size(); i++) {
+			final VPerson p = group.getNames().get(i);
 
-            canvas.lineTo(group.getLeftSide() - 10, middleOfGroup);
+			context.fillText(p.getName(), (double) group.getLeftSide() + 5, (double) offsetTopRight + 15, BOX_WIDTH - 5);
 
-            canvas.moveTo(group.getLeftSide(), offsetTopRight);
-            canvas.closePath();
-            canvas.stroke();
-            canvas.setStrokeStyle("rgb(0,0,0)");
-            canvas.beginPath();
+			context.rect(group.getLeftSide(), offsetTopRight, BOX_WIDTH, 20);
 
-            offsetTopRight += 20;
-        }
+			if (p.advancedTo() >= group.getTier() + 1) {
+				context.closePath();
+				context.stroke();
+				context.setStrokeStyle("rgb(10,255,0)");
+				context.beginPath();
+			}
+			context.moveTo(group.getLeftSide(), offsetTopRight + 10);
+			context.lineTo(group.getLeftSide() - 10, offsetTopRight + 10);
 
-        /* next tier */
-        if (VKnockoutChart.hasAdvance(group.getNames(), group.getTier() + 1)) {
-            canvas.closePath();
-            canvas.stroke();
-            canvas.setStrokeStyle("rgb(10,255,0)");
-            canvas.beginPath();
-        }
-        canvas.moveTo(group.getLeftSide() - 10, middleOfGroup);
-        canvas.lineTo(group.getLeftSide() - 20, middleOfGroup);
+			context.lineTo(group.getLeftSide() - 10, middleOfGroup);
 
-        canvas.lineTo(group.getLeftSide() - 20, group.getChildGroup()
-                .getMiddleOfGroup());
+			context.moveTo(group.getLeftSide(), offsetTopRight);
+			context.closePath();
+			context.stroke();
+			context.setStrokeStyle("rgb(0,0,0)");
+			context.beginPath();
 
-        if (group.getParents().size() > 0) {
-            canvas.moveTo(0, 0);
-            canvas.closePath();
-            canvas.stroke();
-            if (group.hasCompetitors()) {
-                canvas.setStrokeStyle("rgb(10,255,0)");
-                canvas.beginPath();
-            } else {
-                canvas.beginPath();
-            }
-            canvas.moveTo(group.getLeftSide() + BOX_WIDTH, middleOfGroup);
-            canvas.lineTo(group.getLeftSide() + BOX_WIDTH + 10, middleOfGroup);
-        }
+			offsetTopRight += 20;
+		}
 
-        canvas.moveTo(0, 0);
-        canvas.closePath();
-        canvas.stroke();
-    }
+		/* next tier */
+		if (VKnockoutChart.hasAdvance(group.getNames(), group.getTier() + 1)) {
+			context.closePath();
+			context.stroke();
+			context.setStrokeStyle("rgb(10,255,0)");
+			context.beginPath();
+		}
+		context.moveTo(group.getLeftSide() - 10, middleOfGroup);
+		context.lineTo(group.getLeftSide() - 20, middleOfGroup);
 
-    public void finalBout(VGroup group) {
+		context.lineTo(group.getLeftSide() - 20, group.getChildGroup().getMiddleOfGroup());
 
-        canvas.setStrokeStyle("rgb(0,0,0)");
-        canvas.setLineWidth(1);
-        canvas.beginPath();
+		if (group.getParents().size() > 0) {
+			context.moveTo(0, 0);
+			context.closePath();
+			context.stroke();
+			if (group.hasCompetitors()) {
+				context.setStrokeStyle("rgb(10,255,0)");
+				context.beginPath();
+			} else {
+				context.beginPath();
+			}
+			context.moveTo(group.getLeftSide() + BOX_WIDTH, middleOfGroup);
+			context.lineTo(group.getLeftSide() + BOX_WIDTH + 10, middleOfGroup);
+		}
 
-        HTML name = new HTML(group.getName());
-        displayPanel.add(name, (int) group.getLeftSide() + 10,
-                (int) group.getTop() - 15);
-        names.add(name);
+		context.moveTo(0, 0);
+		context.closePath();
+		context.stroke();
+	}
 
-        int offsetTop = (int) group.getTop();
+	public void finalBout(final VGroup group) {
+		final Context2d context = canvas.getContext2d();
 
-        canvas.moveTo(group.getLeftSide(), offsetTop);
-        for (int i = 0; i < group.getNames().size(); i++) {
-            final VPerson p = group.getNames().get(i);
+		context.setStrokeStyle("rgb(0,0,0)");
+		context.setLineWidth(1);
+		context.beginPath();
 
-            name = new HTML(p.getName());
-            displayPanel.add(name, (int) group.getLeftSide() + 10,
-                    offsetTop + 5);
-            names.add(name);
+		context.setFont("14px Arial");
+		context.fillText(group.getName(), (double) group.getLeftSide() + 10, (double) group.getTop() - 5);
 
-            canvas.rect(group.getLeftSide(), offsetTop, BOX_WIDTH, 20);
+		int offsetTop = (int) group.getTop();
 
-            offsetTop += 20;
-        }
+		context.moveTo(group.getLeftSide(), offsetTop);
+		for (int i = 0; i < group.getNames().size(); i++) {
+			final VPerson p = group.getNames().get(i);
 
-        canvas.moveTo(0, 0);
-        canvas.closePath();
-        canvas.stroke();
-    }
+			context.fillText(p.getName(), (double) group.getLeftSide() + 5, (double) offsetTop + 15, BOX_WIDTH - 5);
 
-    public void winner(VGroup winner, VGroup finalBout) {
+			context.rect(group.getLeftSide(), offsetTop, BOX_WIDTH, 20);
 
-        canvas.setStrokeStyle("rgb(0,0,0)");
-        canvas.setLineWidth(1);
-        canvas.beginPath();
+			offsetTop += 20;
+		}
 
-        int offsetTop = (int) winner.getTop();
+		context.moveTo(0, 0);
+		context.closePath();
+		context.stroke();
+	}
 
-        canvas.moveTo(winner.getLeftSide(), offsetTop);
-        for (int i = 0; i < winner.getNames().size(); i++) {
-            final VPerson p = winner.getNames().get(i);
+	public void winner(final VGroup winner, final VGroup finalBout) {
+		final Context2d context = canvas.getContext2d();
 
-            HTML name = new HTML(p.getName());
-            displayPanel.add(name, (int) winner.getLeftSide() + 10,
-                    offsetTop + 5);
-            names.add(name);
+		context.setStrokeStyle("rgb(0,0,0)");
+		context.setLineWidth(1);
+		context.beginPath();
 
-            canvas.rect(winner.getLeftSide(), offsetTop, BOX_WIDTH, 20);
+		int offsetTop = (int) winner.getTop();
 
-            offsetTop += 21;
-        }
-        canvas.moveTo(0, 0);
-        canvas.closePath();
-        canvas.stroke();
+		context.moveTo(winner.getLeftSide(), offsetTop);
+		for (int i = 0; i < winner.getNames().size(); i++) {
+			final VPerson p = winner.getNames().get(i);
 
-        canvas.setStrokeStyle("rgb(10,255,0)");
-        canvas.beginPath();
-        canvas.moveTo(winner.getLeftSide() + BOX_WIDTH / 2, offsetTop);
-        canvas.lineTo(winner.getLeftSide() + BOX_WIDTH / 2,
-                finalBout.getTop() + 1);
-        canvas.closePath();
-        canvas.stroke();
-    }
+			context.fillText(p.getName(), (double) winner.getLeftSide() + 5, (double) offsetTop + 15, BOX_WIDTH - 5);
 
-    public void setBoxWidth(int boxWidth) {
-        BOX_WIDTH = boxWidth;
-    }
+			context.rect(winner.getLeftSide(), offsetTop, BOX_WIDTH, 20);
+
+			offsetTop += 21;
+		}
+		context.moveTo(0, 0);
+		context.closePath();
+		context.stroke();
+
+		context.setStrokeStyle("rgb(10,255,0)");
+		context.beginPath();
+		context.moveTo(winner.getLeftSide() + BOX_WIDTH / 2, offsetTop);
+		context.lineTo(winner.getLeftSide() + BOX_WIDTH / 2, finalBout.getTop() + 1);
+		context.closePath();
+		context.stroke();
+	}
+
+	public void setBoxWidth(final int boxWidth) {
+		BOX_WIDTH = boxWidth;
+	}
 }

@@ -4,7 +4,5 @@
 	<inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
 	
 	<stylesheet src="chart/styles.css" />
-	
-	<inherits name="com.competition.chart.visualisation.client.ui.canvas.gwt-canvas" />
 
 </module>
