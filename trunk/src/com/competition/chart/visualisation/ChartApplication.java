@@ -25,7 +25,7 @@ public class ChartApplication extends Application {
 	public void init() {
 		final Window mainWindow = new Window("Chart Application");
 
-		participants.put(1, new Competitor(1, "Vepsäläinen Johan", 1));
+		participants.put(1, new Competitor(1, "Veps√§l√§inen Johan", 1));
 		participants.put(2, new Competitor(2, "Otto Meri", 0));
 		participants.put(3, new Competitor(3, "Moilanen Joonas", 0));
 		participants.put(4, new Competitor(4, "Hellsten Simo", 0));
@@ -76,8 +76,7 @@ public class ChartApplication extends Application {
 		knockoutChart.addGroup(5, "E sarja", group5);
 		knockoutChart.addGroup(6, "F sarja", group6);
 		knockoutChart.addGroup(7, "G sarja", participants.get(10), participants.get(11));
-		// knockoutChart.addGroup(8, "H sarja", participants.get(13),
-		// participants.get(14));
+		knockoutChart.addGroup(8, "H sarja", participants.get(13), participants.get(14));
 		// knockoutChart.addGroup(9, "I sarja", participants.get(15),
 		// participants.get(16));
 		knockoutChart.setPanningEnabled(true);

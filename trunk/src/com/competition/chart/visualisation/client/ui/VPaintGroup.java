@@ -1,26 +1,28 @@
 package com.competition.chart.visualisation.client.ui;
 
-import java.util.List;
-
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.user.client.ui.HTML;
+import com.vaadin.terminal.gwt.client.VConsole;
 
 public class VPaintGroup {
 
+	private final static String LIGHT_GREEN = "rgb(10,255,0)";
+	private final static String FOREST_GREEN = "rgb(34,139,34)";
+
+	private final static String BLACK = "rgb(0,0,0)";
+
 	private final Canvas canvas;
-	private final List<HTML> names;
+
 	private int BOX_WIDTH = VKnockoutChart.BOX_WIDTH;
 
-	public VPaintGroup(final Canvas canvas, final List<HTML> names) {
+	public VPaintGroup(final Canvas canvas) {
 		this.canvas = canvas;
-		this.names = names;
 	}
 
 	public void left(final VGroup group) {
 		final Context2d context = canvas.getContext2d();
 
-		context.setStrokeStyle("rgb(0,0,0)");
+		context.setStrokeStyle(BLACK);
 		context.setLineWidth(1);
 
 		context.beginPath();
@@ -34,15 +36,20 @@ public class VPaintGroup {
 		for (int i = 0; i < group.getNames().size(); i++) {
 			final VPerson p = group.getNames().get(i);
 
-			context.fillText(p.getName(), (double) group.getLeftSide() + 5, (double) offsetTop + 15, BOX_WIDTH - 5);
+			if (p.advancedTo() >= group.getTier() + 1) {
+				changeFillColor(context, FOREST_GREEN);
+				VConsole.log("Changed color to forest green");
+				context.fillText(p.getName(), (double) group.getLeftSide() + 5, (double) offsetTop + 15, BOX_WIDTH - 5);
+
+				changeFillColor(context, BLACK);
+			} else {
+				context.fillText(p.getName(), (double) group.getLeftSide() + 5, (double) offsetTop + 15, BOX_WIDTH - 5);
+			}
 
 			context.rect(group.getLeftSide(), offsetTop, BOX_WIDTH, 20);
 
 			if (p.advancedTo() >= group.getTier() + 1) {
-				context.closePath();
-				context.stroke();
-				context.setStrokeStyle("rgb(10,255,0)");
-				context.beginPath();
+				changeStrokeColor(context, LIGHT_GREEN);
 			}
 			context.moveTo(group.getLeftSide() + BOX_WIDTH, offsetTop + 10);
 			context.lineTo(group.getLeftSide() + BOX_WIDTH + 10, offsetTop + 10);
@@ -50,20 +57,14 @@ public class VPaintGroup {
 			context.lineTo(group.getLeftSide() + BOX_WIDTH + 10, group.getMiddleOfGroup());
 
 			context.moveTo(group.getLeftSide(), offsetTop);
-			context.closePath();
-			context.stroke();
-			context.setStrokeStyle("rgb(0,0,0)");
-			context.beginPath();
+			changeStrokeColor(context, BLACK);
 
 			offsetTop += 20;
 		}
 
 		/* next tier */
 		if (VKnockoutChart.hasAdvance(group.getNames(), group.getTier() + 1)) {
-			context.closePath();
-			context.stroke();
-			context.setStrokeStyle("rgb(10,255,0)");
-			context.beginPath();
+			changeStrokeColor(context, LIGHT_GREEN);
 		}
 
 		if (group.getChildGroup() != null) {
@@ -78,7 +79,7 @@ public class VPaintGroup {
 			context.closePath();
 			context.stroke();
 			if (group.hasCompetitors()) {
-				context.setStrokeStyle("rgb(10,255,0)");
+				context.setStrokeStyle(LIGHT_GREEN);
 				context.beginPath();
 			} else {
 				context.beginPath();
@@ -95,7 +96,7 @@ public class VPaintGroup {
 	public void right(final VGroup group) {
 		final Context2d context = canvas.getContext2d();
 
-		context.setStrokeStyle("rgb(0,0,0)");
+		context.setStrokeStyle(BLACK);
 		context.setLineWidth(1);
 		context.beginPath();
 
@@ -110,15 +111,20 @@ public class VPaintGroup {
 		for (int i = 0; i < group.getNames().size(); i++) {
 			final VPerson p = group.getNames().get(i);
 
-			context.fillText(p.getName(), (double) group.getLeftSide() + 5, (double) offsetTopRight + 15, BOX_WIDTH - 5);
+			if (p.advancedTo() >= group.getTier() + 1) {
+				changeFillColor(context, FOREST_GREEN);
+				VConsole.log("Changed color to forest green");
+				context.fillText(p.getName(), (double) group.getLeftSide() + 5, (double) offsetTopRight + 15, BOX_WIDTH - 5);
+
+				changeFillColor(context, BLACK);
+			} else {
+				context.fillText(p.getName(), (double) group.getLeftSide() + 5, (double) offsetTopRight + 15, BOX_WIDTH - 5);
+			}
 
 			context.rect(group.getLeftSide(), offsetTopRight, BOX_WIDTH, 20);
 
 			if (p.advancedTo() >= group.getTier() + 1) {
-				context.closePath();
-				context.stroke();
-				context.setStrokeStyle("rgb(10,255,0)");
-				context.beginPath();
+				changeStrokeColor(context, LIGHT_GREEN);
 			}
 			context.moveTo(group.getLeftSide(), offsetTopRight + 10);
 			context.lineTo(group.getLeftSide() - 10, offsetTopRight + 10);
@@ -126,20 +132,14 @@ public class VPaintGroup {
 			context.lineTo(group.getLeftSide() - 10, middleOfGroup);
 
 			context.moveTo(group.getLeftSide(), offsetTopRight);
-			context.closePath();
-			context.stroke();
-			context.setStrokeStyle("rgb(0,0,0)");
-			context.beginPath();
+			changeStrokeColor(context, BLACK);
 
 			offsetTopRight += 20;
 		}
 
 		/* next tier */
 		if (VKnockoutChart.hasAdvance(group.getNames(), group.getTier() + 1)) {
-			context.closePath();
-			context.stroke();
-			context.setStrokeStyle("rgb(10,255,0)");
-			context.beginPath();
+			changeStrokeColor(context, LIGHT_GREEN);
 		}
 		context.moveTo(group.getLeftSide() - 10, middleOfGroup);
 		context.lineTo(group.getLeftSide() - 20, middleOfGroup);
@@ -151,7 +151,7 @@ public class VPaintGroup {
 			context.closePath();
 			context.stroke();
 			if (group.hasCompetitors()) {
-				context.setStrokeStyle("rgb(10,255,0)");
+				context.setStrokeStyle(LIGHT_GREEN);
 				context.beginPath();
 			} else {
 				context.beginPath();
@@ -168,7 +168,7 @@ public class VPaintGroup {
 	public void finalBout(final VGroup group) {
 		final Context2d context = canvas.getContext2d();
 
-		context.setStrokeStyle("rgb(0,0,0)");
+		context.setStrokeStyle(BLACK);
 		context.setLineWidth(1);
 		context.beginPath();
 
@@ -181,7 +181,15 @@ public class VPaintGroup {
 		for (int i = 0; i < group.getNames().size(); i++) {
 			final VPerson p = group.getNames().get(i);
 
-			context.fillText(p.getName(), (double) group.getLeftSide() + 5, (double) offsetTop + 15, BOX_WIDTH - 5);
+			if (p.advancedTo() >= group.getTier() + 1) {
+				changeFillColor(context, FOREST_GREEN);
+				VConsole.log("Changed color to forest green");
+				context.fillText(p.getName(), (double) group.getLeftSide() + 5, (double) offsetTop + 15, BOX_WIDTH - 5);
+
+				changeFillColor(context, BLACK);
+			} else {
+				context.fillText(p.getName(), (double) group.getLeftSide() + 5, (double) offsetTop + 15, BOX_WIDTH - 5);
+			}
 
 			context.rect(group.getLeftSide(), offsetTop, BOX_WIDTH, 20);
 
@@ -196,7 +204,7 @@ public class VPaintGroup {
 	public void winner(final VGroup winner, final VGroup finalBout) {
 		final Context2d context = canvas.getContext2d();
 
-		context.setStrokeStyle("rgb(0,0,0)");
+		context.setStrokeStyle(BLACK);
 		context.setLineWidth(1);
 		context.beginPath();
 
@@ -216,7 +224,7 @@ public class VPaintGroup {
 		context.closePath();
 		context.stroke();
 
-		context.setStrokeStyle("rgb(10,255,0)");
+		context.setStrokeStyle(LIGHT_GREEN);
 		context.beginPath();
 		context.moveTo(winner.getLeftSide() + BOX_WIDTH / 2, offsetTop);
 		context.lineTo(winner.getLeftSide() + BOX_WIDTH / 2, finalBout.getTop() + 1);
@@ -226,5 +234,19 @@ public class VPaintGroup {
 
 	public void setBoxWidth(final int boxWidth) {
 		BOX_WIDTH = boxWidth;
+	}
+
+	private void changeStrokeColor(final Context2d context, final String rgb) {
+		context.closePath();
+		context.stroke();
+		context.setStrokeStyle(rgb);
+		context.beginPath();
+	}
+
+	private void changeFillColor(final Context2d context, final String rgb) {
+		context.closePath();
+		context.stroke();
+		context.setFillStyle(rgb);
+		context.beginPath();
 	}
 }
