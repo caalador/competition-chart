@@ -1,10 +1,13 @@
-package com.competition.chart.visualisation;
+package com.competition.chart.demo;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
+import com.competition.chart.visualisation.Competitor;
+import com.competition.chart.visualisation.KnockoutChart;
 import com.competition.chart.visualisation.KnockoutChart.ValueSelectEvent;
 import com.competition.chart.visualisation.KnockoutChart.ValueSelectListener;
 import com.competition.chart.visualisation.KnockoutChart.VisualisationMode;
@@ -20,31 +23,32 @@ public class ChartApplication extends Application {
 
 	private final Map<Integer, Competitor> participants = new HashMap<Integer, Competitor>();
 	private KnockoutChart knockoutChart;
+	private final Random rand = new Random(System.currentTimeMillis());
 
 	@Override
 	public void init() {
 		final Window mainWindow = new Window("Chart Application");
 
-		participants.put(1, new Competitor(1, "Vepsäläinen Johan", 1));
-		participants.put(2, new Competitor(2, "Otto Meri", 0));
-		participants.put(3, new Competitor(3, "Moilanen Joonas", 0));
-		participants.put(4, new Competitor(4, "Hellsten Simo", 0));
-		participants.put(5, new Competitor(5, "Vilkama Voitto", 0));
-		participants.put(6, new Competitor(6, "Roininen Tuomas", 1));
-		participants.put(7, new Competitor(7, "Rupponen Pasi", 1));
-		participants.put(8, new Competitor(8, "Korhonen Markku", 0));
-		participants.put(9, new Competitor(9, "Malm Janne", 0));
-		participants.put(10, new Competitor(10, "Marjola Kalle", 0));
-		participants.put(11, new Competitor(11, "Shibata Minako", 0));
-		participants.put(12, new Competitor(12, "Nieminen Vesa", 1));
-		participants.put(13, new Competitor(13, "Shibata Minako", 0));
-		participants.put(14, new Competitor(14, "Shibata Minako", 0));
-		participants.put(15, new Competitor(15, "Shibata Minako", 0));
-		participants.put(16, new Competitor(16, "Shibata Minako", 0));
-		participants.put(17, new Competitor(17, "Shibata Minako", 0));
-		participants.put(18, new Competitor(18, "Shibata Minako", 0));
-		participants.put(19, new Competitor(19, "Shibata Minako", 0));
-		participants.put(20, new Competitor(20, "Shibata Minako", 0));
+		participants.put(1, new Competitor(1, getName(), 1));
+		participants.put(2, new Competitor(2, getName(), 0));
+		participants.put(3, new Competitor(3, getName(), 0));
+		participants.put(4, new Competitor(4, getName(), 0));
+		participants.put(5, new Competitor(5, getName(), 0));
+		participants.put(6, new Competitor(6, getName(), 1));
+		participants.put(7, new Competitor(7, getName(), 1));
+		participants.put(8, new Competitor(8, getName(), 0));
+		participants.put(9, new Competitor(9, getName(), 0));
+		participants.put(10, new Competitor(10, getName(), 0));
+		participants.put(11, new Competitor(11, getName(), 0));
+		participants.put(12, new Competitor(12, getName(), 1));
+		participants.put(13, new Competitor(13, getName(), 0));
+		participants.put(14, new Competitor(14, getName(), 0));
+		participants.put(15, new Competitor(15, getName(), 0));
+		participants.put(16, new Competitor(16, getName(), 0));
+		participants.put(17, new Competitor(17, getName(), 0));
+		participants.put(18, new Competitor(18, getName(), 0));
+		participants.put(19, new Competitor(19, getName(), 0));
+		participants.put(20, new Competitor(20, getName(), 0));
 
 		final List<Competitor> group1 = new LinkedList<Competitor>();
 		group1.add(participants.get(1));
@@ -101,6 +105,15 @@ public class ChartApplication extends Application {
 		mainWindow.addComponent(knockoutChart);
 
 		setMainWindow(mainWindow);
+	}
+
+	private String getName() {
+		final StringBuilder name = new StringBuilder();
+		name.append(Names.surNames[rand.nextInt(Names.surNames.length)]);
+		name.append(" ");
+		name.append(Names.firstNames[rand.nextInt(Names.firstNames.length)]);
+
+		return name.toString();
 	}
 
 	private final ValueSelectListener vcl = new ValueSelectListener() {
