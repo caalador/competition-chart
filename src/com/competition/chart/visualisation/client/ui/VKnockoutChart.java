@@ -15,7 +15,6 @@ import com.google.gwt.event.dom.client.TouchEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
@@ -43,8 +42,6 @@ public class VKnockoutChart extends Widget implements Paintable {
 	private final List<VGroup> groups = new LinkedList<VGroup>();
 	private VGroup finalBout, winner;
 	private int onLeft, onRight;
-
-	private final List<HTML> names = new LinkedList<HTML>();
 
 	private int offsetLeft = 15;
 
@@ -85,7 +82,7 @@ public class VKnockoutChart extends Widget implements Paintable {
 		}
 		sinkEvents(Event.MOUSEEVENTS);
 
-		paint = new VPaintGroup(canvas, names);
+		paint = new VPaintGroup(canvas);
 	}
 
 	/**
@@ -502,7 +499,6 @@ public class VKnockoutChart extends Widget implements Paintable {
 
 	private void drawChart() {
 		drawnGroups.clear();
-		names.clear();
 
 		canvas.getContext2d().clearRect(0.0, 0.0, canvas.getCoordinateSpaceWidth(), canvas.getCoordinateSpaceWidth());
 
@@ -517,7 +513,6 @@ public class VKnockoutChart extends Widget implements Paintable {
 
 	private void drawLeftChart() {
 		drawnGroups.clear();
-		names.clear();
 
 		canvas.getContext2d().clearRect(0.0, 0.0, canvas.getCoordinateSpaceWidth(), canvas.getCoordinateSpaceWidth());
 
