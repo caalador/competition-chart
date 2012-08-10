@@ -14,7 +14,10 @@ import com.competition.chart.visualisation.KnockoutChart.VisualisationMode;
 import com.vaadin.Application;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Window;
 
 public class ChartApplication extends Application {
@@ -100,8 +103,33 @@ public class ChartApplication extends Application {
 				knockoutChart.requestRepaint();
 			}
 		});
+		final CheckBox pan = new CheckBox("Panning enabled");
+		pan.setValue(true);
+		pan.setImmediate(true);
+		pan.addListener(new ValueChangeListener() {
+			private static final long serialVersionUID = -347103891605131202L;
 
-		mainWindow.addComponent(left);
+			public void valueChange(final ValueChangeEvent event) {
+				knockoutChart.setPanningEnabled(pan.booleanValue());
+				knockoutChart.requestRepaint();
+			}
+		});
+		final Button reset = new Button("Reset position", new Button.ClickListener() {
+			private static final long serialVersionUID = -4090369163773691780L;
+
+			public void buttonClick(final ClickEvent event) {
+				knockoutChart.resetChartPositions();
+				knockoutChart.requestRepaint();
+			}
+		});
+
+		final HorizontalLayout controlls = new HorizontalLayout();
+
+		controlls.addComponent(left);
+		controlls.addComponent(pan);
+		controlls.addComponent(reset);
+
+		mainWindow.addComponent(controlls);
 		mainWindow.addComponent(knockoutChart);
 
 		setMainWindow(mainWindow);
