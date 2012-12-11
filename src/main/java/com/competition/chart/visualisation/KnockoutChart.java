@@ -29,16 +29,12 @@ public class KnockoutChart extends AbstractComponent {
 	private boolean left = false;
 	private boolean enableDrag = false;
 	private int boxWidth;
-	// private final boolean sendBoxWidth = false;
-	// private final boolean reset = false;
-	// private final List<Integer> givenIds = new LinkedList<Integer>();
 
 	KnockoutChartServerRpc rpc = new KnockoutChartServerRpc() {
 		private static final long serialVersionUID = -3141658206485027775L;
 
 		@Override
 		public void clickedOnCompetitor(final long selectionId) {
-			System.out.println("SelectionEvent " + selectionId);
 			if (idExists(selectionId)) {
 				fireValueSelect(selectionId);
 				markAsDirty();
