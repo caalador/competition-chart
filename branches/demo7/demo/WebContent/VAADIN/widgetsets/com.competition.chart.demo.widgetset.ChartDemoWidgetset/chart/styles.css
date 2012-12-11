@@ -1,0 +1,77 @@
+.competition {
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	border-bottom: 1px solid black;
+	padding-left: 5px;
+	width: 100px;
+	height: 20px;
+}
+.competition.first {
+	border-top: 1px solid black;
+}
+.competition.right {
+	float: right;
+}
+
+.float_left {
+	float: left;
+}
+.float_right {
+	float: right;
+}
+
+.advanced {
+	height: 10px;
+	width: 25px;
+	border-bottom: 2px solid green;
+	position: relative;
+	top: 10px;
+}
+.advanced.top {
+	top: 11px;
+	border-top: 2px solid green;
+	border-bottom: none;
+}
+.advanced.left {
+/*	float: left;*/
+	border-right: 2px solid green;
+}
+.advanced.right {
+/*	float: right;*/
+	border-left: 2px solid green;
+}
+.advanced-middle {
+	height: 1px;
+	width: 25px;
+	border-bottom: 2px solid green;
+	position: relative;
+	top: 10px;
+}
+
+.connect {
+	height: 10px;
+	width: 25px;
+	border-bottom: 1px solid black;
+	position: relative;
+	top: 10px;
+}
+.connect.top {
+	top: 11px;
+	border-top: 1px solid black;
+	border-bottom: none;
+}
+.connect.left {
+/*	float: left;*/
+	border-right: 1px solid black;
+}
+.connect.right {
+/*	float: right;*/
+	border-left: 1px solid black;
+}
+.connect-middle {
+	height: 1px;
+	width: 25px;
+	border-bottom: 1px solid black;
+	position: relative;
+	top: 10px;
+}
