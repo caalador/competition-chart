@@ -34,19 +34,19 @@ public class KnockoutChartConnector extends AbstractComponentConnector implement
 
 			@Override
 			public void setNameBoxWidth(final int boxWidth) {
-				VKnockoutChart.setBoxWidth(boxWidth);
+				CKnockoutChart.setBoxWidth(boxWidth);
 			}
 		});
 	}
 
 	@Override
 	protected Widget createWidget() {
-		return GWT.create(VKnockoutChart.class);
+		return GWT.create(CKnockoutChart.class);
 	}
 
 	@Override
-	public VKnockoutChart getWidget() {
-		return (VKnockoutChart) super.getWidget();
+	public CKnockoutChart getWidget() {
+		return (CKnockoutChart) super.getWidget();
 	}
 
 	@Override

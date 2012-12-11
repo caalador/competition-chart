@@ -5,7 +5,7 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.vaadin.client.VConsole;
 
-public class VPaintGroup {
+public class CPaintGroup {
 
 	private final static String LIGHT_GREEN = "rgb(10,255,0)";
 	private final static String FOREST_GREEN = "rgb(34,139,34)";
@@ -14,13 +14,13 @@ public class VPaintGroup {
 
 	private final Canvas canvas;
 
-	private int BOX_WIDTH = VKnockoutChart.BOX_WIDTH;
+	private int BOX_WIDTH = CKnockoutChart.BOX_WIDTH;
 
-	public VPaintGroup(final Canvas canvas) {
+	public CPaintGroup(final Canvas canvas) {
 		this.canvas = canvas;
 	}
 
-	public void left(final VGroup group) {
+	public void left(final CGroup group) {
 		final Context2d context = canvas.getContext2d();
 
 		context.setStrokeStyle(BLACK);
@@ -64,7 +64,7 @@ public class VPaintGroup {
 		}
 
 		/* next tier */
-		if (VKnockoutChart.hasAdvance(group.getNames(), group.getTier() + 1)) {
+		if (CKnockoutChart.hasAdvance(group.getNames(), group.getTier() + 1)) {
 			changeStrokeColor(context, LIGHT_GREEN);
 		}
 
@@ -94,7 +94,7 @@ public class VPaintGroup {
 		context.stroke();
 	}
 
-	public void right(final VGroup group) {
+	public void right(final CGroup group) {
 		final Context2d context = canvas.getContext2d();
 
 		context.setStrokeStyle(BLACK);
@@ -139,7 +139,7 @@ public class VPaintGroup {
 		}
 
 		/* next tier */
-		if (VKnockoutChart.hasAdvance(group.getNames(), group.getTier() + 1)) {
+		if (CKnockoutChart.hasAdvance(group.getNames(), group.getTier() + 1)) {
 			changeStrokeColor(context, LIGHT_GREEN);
 		}
 		context.moveTo(group.getLeftSide() - 10, middleOfGroup);
@@ -166,7 +166,7 @@ public class VPaintGroup {
 		context.stroke();
 	}
 
-	public void finalBout(final VGroup group) {
+	public void finalBout(final CGroup group) {
 		final Context2d context = canvas.getContext2d();
 
 		context.setStrokeStyle(BLACK);
@@ -202,7 +202,7 @@ public class VPaintGroup {
 		context.stroke();
 	}
 
-	public void winner(final VGroup winner, final VGroup finalBout) {
+	public void winner(final CGroup winner, final CGroup finalBout) {
 		final Context2d context = canvas.getContext2d();
 
 		context.setStrokeStyle(BLACK);

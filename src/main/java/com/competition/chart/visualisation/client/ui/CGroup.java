@@ -5,19 +5,19 @@ import java.util.List;
 
 import com.competition.chart.visualisation.client.Competitor;
 
-public class VGroup {
+public class CGroup {
 	private final String id;
 	private String name;
 	private int number;
 	private int tier = 0;
 	private final List<Competitor> names = new LinkedList<Competitor>();
-	private VGroup childGroup = null;
-	private final List<VGroup> parents = new LinkedList<VGroup>();
+	private CGroup childGroup = null;
+	private final List<CGroup> parents = new LinkedList<CGroup>();
 	private float middleOfGroup, top, bottom, leftSide;
 
 	private boolean hasPosition = false;
 
-	public VGroup(final String id) {
+	public CGroup(final String id) {
 		this.id = id;
 		final String[] idString = id.split("_");
 		number = Integer.parseInt(idString[0]);
@@ -73,19 +73,19 @@ public class VGroup {
 		return names;
 	}
 
-	public void setChildGroup(final VGroup child) {
+	public void setChildGroup(final CGroup child) {
 		childGroup = child;
 	}
 
-	public VGroup getChildGroup() {
+	public CGroup getChildGroup() {
 		return childGroup;
 	}
 
-	public void addParent(final VGroup parent) {
+	public void addParent(final CGroup parent) {
 		parents.add(parent);
 	}
 
-	public List<VGroup> getParents() {
+	public List<CGroup> getParents() {
 		return parents;
 	}
 
