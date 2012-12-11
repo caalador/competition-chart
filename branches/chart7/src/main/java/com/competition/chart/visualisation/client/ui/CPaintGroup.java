@@ -1,6 +1,7 @@
 package com.competition.chart.visualisation.client.ui;
 
 import com.competition.chart.visualisation.client.Competitor;
+import com.competition.chart.visualisation.client.Group;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.vaadin.client.VConsole;
@@ -20,7 +21,7 @@ public class CPaintGroup {
 		this.canvas = canvas;
 	}
 
-	public void left(final CGroup group) {
+	public void left(final Group group) {
 		final Context2d context = canvas.getContext2d();
 
 		context.setStrokeStyle(BLACK);
@@ -94,7 +95,7 @@ public class CPaintGroup {
 		context.stroke();
 	}
 
-	public void right(final CGroup group) {
+	public void right(final Group group) {
 		final Context2d context = canvas.getContext2d();
 
 		context.setStrokeStyle(BLACK);
@@ -166,7 +167,7 @@ public class CPaintGroup {
 		context.stroke();
 	}
 
-	public void finalBout(final CGroup group) {
+	public void finalBout(final Group group) {
 		final Context2d context = canvas.getContext2d();
 
 		context.setStrokeStyle(BLACK);
@@ -202,7 +203,7 @@ public class CPaintGroup {
 		context.stroke();
 	}
 
-	public void winner(final CGroup winner, final CGroup finalBout) {
+	public void winner(final Group winner, final Group finalBout) {
 		final Context2d context = canvas.getContext2d();
 
 		context.setStrokeStyle(BLACK);
