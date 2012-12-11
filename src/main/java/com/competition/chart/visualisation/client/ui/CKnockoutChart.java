@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.competition.chart.visualisation.client.Competitor;
+import com.competition.chart.visualisation.client.Group;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Touch;
@@ -34,13 +35,13 @@ public class CKnockoutChart extends Widget {
 
 	private final CPaintGroup paint;
 
-	private final List<CGroup> groups = new LinkedList<CGroup>();
-	private CGroup finalBout, winner;
+	private final List<Group> groups = new LinkedList<Group>();
+	private Group finalBout, winner;
 	private int onLeft, onRight;
 
 	private int offsetLeft = 15;
 
-	private final List<CGroup> drawnGroups = new LinkedList<CGroup>();
+	private final List<Group> drawnGroups = new LinkedList<Group>();
 	private boolean onlyLeft = false;
 
 	public static int BOX_WIDTH = 150;
@@ -109,7 +110,7 @@ public class CKnockoutChart extends Widget {
 
 	public void checkGroups(final Map<String, List<Competitor>> competitorsByGroup) {
 		boolean newData = false;
-		for (final CGroup group : groups) {
+		for (final Group group : groups) {
 			if (!competitorsByGroup.keySet().contains(group.getId()) && !newData) {
 				newData = true;
 				break;
@@ -123,7 +124,7 @@ public class CKnockoutChart extends Widget {
 		}
 
 		for (final String req2 : competitorsByGroup.keySet()) {
-			final CGroup group = getGroup(req2);
+			final Group group = getGroup(req2);
 
 			final List<Competitor> persons = competitorsByGroup.get(req2);
 
@@ -131,9 +132,9 @@ public class CKnockoutChart extends Widget {
 				group.addName(person);
 			}
 		}
-		Collections.sort(groups, new Comparator<CGroup>() {
+		Collections.sort(groups, new Comparator<Group>() {
 			@Override
-			public int compare(final CGroup o1, final CGroup o2) {
+			public int compare(final Group o1, final Group o2) {
 				return o1.getNumber() == o2.getNumber() ? 0 : o1.getNumber() < o2.getNumber() ? -1 : 1;
 			}
 		});
@@ -169,14 +170,14 @@ public class CKnockoutChart extends Widget {
 	 * @param id
 	 * @return
 	 */
-	private CGroup getGroup(final String id) {
-		for (final CGroup g : groups) {
+	private Group getGroup(final String id) {
+		for (final Group g : groups) {
 			if (g.getId().equals(id)) {
 				return g;
 			}
 		}
 
-		final CGroup group = new CGroup(id);
+		final Group group = new Group(id);
 		groups.add(group);
 
 		return group;
@@ -189,7 +190,7 @@ public class CKnockoutChart extends Widget {
 		onRight = groups.size() - onLeft;
 
 		for (int i = 0; i < groups.size(); i++) {
-			final CGroup group = groups.get(i);
+			final Group group = groups.get(i);
 			if (i == onLeft) {
 				if (onLeft > onRight) {
 					top = 25 + getLeftRightDifference();
@@ -233,7 +234,7 @@ public class CKnockoutChart extends Widget {
 		float top = 35;
 
 		for (int i = 0; i < groups.size(); i++) {
-			final CGroup group = groups.get(i);
+			final Group group = groups.get(i);
 			if (calculateTop) {
 				top = group.calculatePosition(top);
 			}
@@ -246,15 +247,15 @@ public class CKnockoutChart extends Widget {
 		int n = groups.size();
 		int tier = 1;
 		int parent = 0;
-		CGroup lastChild = groups.get(0);
-		List<CGroup> targetGroup = groups;
-		List<CGroup> childGroup = new LinkedList<CGroup>();
+		Group lastChild = groups.get(0);
+		List<Group> targetGroup = groups;
+		List<Group> childGroup = new LinkedList<Group>();
 
 		while (n > 1) {
 			offsetLeft += BOX_WIDTH + 30;
 			n = n / 2 + n % 2;
 			for (int i = 0; i < n; i++) {
-				final CGroup child = new CGroup(nextID + "_ _" + tier);
+				final Group child = new Group(nextID + "_ _" + tier);
 				targetGroup.get(parent).setChildGroup(child);
 				addAdvanced(child, targetGroup.get(parent).getNames());
 				child.addParent(targetGroup.get(parent++));
@@ -270,13 +271,13 @@ public class CKnockoutChart extends Widget {
 				nextID++;
 			}
 			targetGroup = childGroup;
-			childGroup = new LinkedList<CGroup>();
+			childGroup = new LinkedList<Group>();
 			parent = 0;
 			tier++;
 		}
 		if (n == 1) {
 			offsetLeft += BOX_WIDTH + 20;
-			finalBout = new CGroup(nextID + "_ _" + tier);
+			finalBout = new Group(nextID + "_ _" + tier);
 			lastChild.setChildGroup(finalBout);
 			finalBout.addParent(lastChild);
 			addAdvanced(finalBout, lastChild.getNames());
@@ -292,15 +293,15 @@ public class CKnockoutChart extends Widget {
 		int maxTier = 1;
 		int tier = 1;
 		int parent = 0;
-		CGroup lastChild = groups.get(0);
-		List<CGroup> targetGroup = groups;
-		List<CGroup> childGroup = new LinkedList<CGroup>();
+		Group lastChild = groups.get(0);
+		List<Group> targetGroup = groups;
+		List<Group> childGroup = new LinkedList<Group>();
 
 		while (n > 1) {
 			offsetLeft += BOX_WIDTH + 30;
 			n = n / 2 + n % 2;
 			for (int i = 0; i < n; i++) {
-				final CGroup child = new CGroup(nextID + "_ _" + tier);
+				final Group child = new Group(nextID + "_ _" + tier);
 				targetGroup.get(parent).setChildGroup(child);
 				addAdvanced(child, targetGroup.get(parent).getNames());
 				child.addParent(targetGroup.get(parent++));
@@ -316,13 +317,13 @@ public class CKnockoutChart extends Widget {
 				nextID++;
 			}
 			targetGroup = childGroup;
-			childGroup = new LinkedList<CGroup>();
+			childGroup = new LinkedList<Group>();
 			parent = 0;
 			tier++;
 		}
 		if (n == 1) {
 			offsetLeft += BOX_WIDTH + 20;
-			finalBout = new CGroup(nextID + "_ _" + tier);
+			finalBout = new Group(nextID + "_ _" + tier);
 			lastChild.setChildGroup(finalBout);
 			finalBout.addParent(lastChild);
 			addAdvanced(finalBout, lastChild.getNames());
@@ -340,7 +341,7 @@ public class CKnockoutChart extends Widget {
 		parent = onLeft;
 		tier = 1;
 		targetGroup = groups;
-		childGroup = new LinkedList<CGroup>();
+		childGroup = new LinkedList<Group>();
 		for (int i = parent; i < groups.size(); i++) {
 			targetGroup.get(i).setLeftSide(offsetLeft);
 		}
@@ -349,7 +350,7 @@ public class CKnockoutChart extends Widget {
 			offsetLeft -= BOX_WIDTH + 30;
 			n = n / 2 + n % 2;
 			for (int i = 0; i < n; i++) {
-				final CGroup child = new CGroup(nextID + "_ _" + tier);
+				final Group child = new Group(nextID + "_ _" + tier);
 				targetGroup.get(parent).setChildGroup(child);
 				addAdvanced(child, targetGroup.get(parent).getNames());
 				child.addParent(targetGroup.get(parent++));
@@ -365,7 +366,7 @@ public class CKnockoutChart extends Widget {
 				nextID++;
 			}
 			targetGroup = childGroup;
-			childGroup = new LinkedList<CGroup>();
+			childGroup = new LinkedList<Group>();
 			parent = 0;
 			tier++;
 		}
@@ -385,7 +386,7 @@ public class CKnockoutChart extends Widget {
 		// }
 		if (n == 1 || onRight == 1) {
 			if (onRight == 1) {
-				final CGroup parentGroup = groups.get(parent);
+				final Group parentGroup = groups.get(parent);
 				parentGroup.setChildGroup(finalBout);
 				finalBout.addParent(parentGroup);
 				addAdvanced(finalBout, parentGroup.getNames());
@@ -396,17 +397,17 @@ public class CKnockoutChart extends Widget {
 			}
 		}
 		if (hasAdvance(finalBout.getNames(), maxTier + 1)) {
-			winner = new CGroup("99_ _" + (maxTier + 1));
+			winner = new Group("99_ _" + (maxTier + 1));
 			addAdvanced(winner, finalBout.getNames());
 		}
 		fillGroup(finalBout);
 	}
 
 	private void calculateChildPositions() {
-		final List<CGroup> allGroups = new LinkedList<CGroup>();
+		final List<Group> allGroups = new LinkedList<Group>();
 
-		for (final CGroup group : groups) {
-			CGroup child = group;
+		for (final Group group : groups) {
+			Group child = group;
 			while (child.getChildGroup() != null) {
 				child = child.getChildGroup();
 				if (!allGroups.contains(child)) {
@@ -423,12 +424,12 @@ public class CKnockoutChart extends Widget {
 
 	}
 
-	private boolean calculatePosition(final List<CGroup> allGroups) {
-		final List<CGroup> remove = new ArrayList<CGroup>();
+	private boolean calculatePosition(final List<Group> allGroups) {
+		final List<Group> remove = new ArrayList<Group>();
 
-		for (final CGroup group : allGroups) {
+		for (final Group group : allGroups) {
 			boolean allParentsHavePosition = true;
-			for (final CGroup parent : group.getParents()) {
+			for (final Group parent : group.getParents()) {
 				if (!parent.hasPosition()) {
 					allParentsHavePosition = false;
 				}
@@ -436,7 +437,7 @@ public class CKnockoutChart extends Widget {
 			if (allParentsHavePosition) {
 				float bottom = Float.MAX_VALUE;
 				float top = 0;
-				for (final CGroup parent : group.getParents()) {
+				for (final Group parent : group.getParents()) {
 					if (parent.getBottom() < bottom) {
 						bottom = parent.getBottom();
 					}
@@ -465,7 +466,7 @@ public class CKnockoutChart extends Widget {
 		canvas.getContext2d().clearRect(0.0, 0.0, canvas.getCoordinateSpaceWidth(), canvas.getCoordinateSpaceWidth());
 
 		for (int j = 0; j < onLeft; j++) {
-			final CGroup group = groups.get(j);
+			final Group group = groups.get(j);
 			paint.left(group);
 			drawnGroups.add(group);
 			drawChild(group.getChildGroup());
@@ -478,7 +479,7 @@ public class CKnockoutChart extends Widget {
 
 		canvas.getContext2d().clearRect(0.0, 0.0, canvas.getCoordinateSpaceWidth(), canvas.getCoordinateSpaceWidth());
 
-		for (final CGroup group : groups) {
+		for (final Group group : groups) {
 			paint.left(group);
 			drawnGroups.add(group);
 			if (group.getChildGroup() != null) {
@@ -489,7 +490,7 @@ public class CKnockoutChart extends Widget {
 
 	Map<Integer, Boolean> drawTier = new HashMap<Integer, Boolean>();
 
-	private void drawChild(final CGroup childGroup) {
+	private void drawChild(final Group childGroup) {
 		if (drawnGroups.contains(childGroup)) {
 			return;
 		}
@@ -509,9 +510,9 @@ public class CKnockoutChart extends Widget {
 		}
 	}
 
-	private void drawParent(final CGroup childGroup) {
+	private void drawParent(final Group childGroup) {
 		offsetLeft += 30;
-		for (final CGroup parent : childGroup.getParents()) {
+		for (final Group parent : childGroup.getParents()) {
 
 			if (!drawnGroups.contains(parent)) {
 				if (childGroup.getParents().size() == 2 && childGroup != finalBout) {
@@ -538,7 +539,7 @@ public class CKnockoutChart extends Widget {
 		return false;
 	}
 
-	private void addAdvanced(final CGroup child, final List<Competitor> persons) {
+	private void addAdvanced(final Group child, final List<Competitor> persons) {
 		for (final Competitor p : persons) {
 			if (p.advancedTo() >= child.getTier()) {
 				child.addName(p);
@@ -546,7 +547,7 @@ public class CKnockoutChart extends Widget {
 		}
 	}
 
-	private void fillGroup(final CGroup group) {
+	private void fillGroup(final Group group) {
 		if (group.getNames().isEmpty()) {
 			group.addName(new Competitor(-1, "", 0));
 		}
@@ -625,7 +626,7 @@ public class CKnockoutChart extends Widget {
 
 			xDown = event.getClientX();
 			yDown = event.getClientY();
-			for (final CGroup group : drawnGroups) {
+			for (final Group group : drawnGroups) {
 				group.updatePosition(yChange);
 				group.setLeftSide(group.getLeftSide() + xChange);
 			}
@@ -641,7 +642,7 @@ public class CKnockoutChart extends Widget {
 				mouseDown = false;
 				final int x = event.getClientX() - getAbsoluteLeft();
 				final int y = event.getClientY() - getAbsoluteTop();
-				for (final CGroup group : drawnGroups) {
+				for (final Group group : drawnGroups) {
 					if (group.getLeftSide() < x && x < group.getLeftSide() + BOX_WIDTH && group.getTop() < y && y < group.getBottom()) {
 						try {
 							final Competitor person = group.getNames().get((int) (y - group.getTop()) / 20);
@@ -673,7 +674,7 @@ public class CKnockoutChart extends Widget {
 			xDown = touch.getPageX();
 			yDown = touch.getPageY();
 
-			for (final CGroup group : drawnGroups) {
+			for (final Group group : drawnGroups) {
 				group.updatePosition(yChange);
 				group.setLeftSide(group.getLeftSide() + xChange);
 			}

@@ -1,23 +1,22 @@
-package com.competition.chart.visualisation.client.ui;
+package com.competition.chart.visualisation.client;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import com.competition.chart.visualisation.client.Competitor;
 
-public class CGroup {
+public class Group {
 	private final String id;
 	private String name;
 	private int number;
 	private int tier = 0;
 	private final List<Competitor> names = new LinkedList<Competitor>();
-	private CGroup childGroup = null;
-	private final List<CGroup> parents = new LinkedList<CGroup>();
+	private Group childGroup = null;
+	private final List<Group> parents = new LinkedList<Group>();
 	private float middleOfGroup, top, bottom, leftSide;
 
 	private boolean hasPosition = false;
 
-	public CGroup(final String id) {
+	public Group(final String id) {
 		this.id = id;
 		final String[] idString = id.split("_");
 		number = Integer.parseInt(idString[0]);
@@ -73,19 +72,19 @@ public class CGroup {
 		return names;
 	}
 
-	public void setChildGroup(final CGroup child) {
+	public void setChildGroup(final Group child) {
 		childGroup = child;
 	}
 
-	public CGroup getChildGroup() {
+	public Group getChildGroup() {
 		return childGroup;
 	}
 
-	public void addParent(final CGroup parent) {
+	public void addParent(final Group parent) {
 		parents.add(parent);
 	}
 
-	public List<CGroup> getParents() {
+	public List<Group> getParents() {
 		return parents;
 	}
 
