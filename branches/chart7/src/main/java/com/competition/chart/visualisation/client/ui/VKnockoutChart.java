@@ -28,9 +28,6 @@ public class VKnockoutChart extends Widget {
 	/** The client side widget identifier */
 	protected String paintableId;
 
-	/** Reference to the server connection object. */
-	// ApplicationConnection client;
-
 	private final Integer pixelWidth = null;
 
 	private final Canvas canvas;
@@ -110,109 +107,6 @@ public class VKnockoutChart extends Widget {
 		BOX_WIDTH = boxWidth;
 	}
 
-	// /**
-	// * Called whenever an update is received from the server
-	// */
-	// public void updateFromUIDL(final UIDL uidl, final ApplicationConnection
-	// client) {
-	//
-	// if (client.updateComponent(this, uidl, true) || canvas == null) {
-	// return;
-	// }
-	//
-	// this.client = client;
-	// paintableId = uidl.getId();
-	//
-	// if (uidl.hasAttribute("width")) {
-	// final String widthString = uidl.getStringAttribute("width");
-	// width = Integer.parseInt(widthString.substring(0,
-	// widthString.indexOf("px")));
-	//
-	// // Percentual width
-	// if (uidl.hasAttribute("widthpercentage")) {
-	// width = getElement().getParentElement().getClientWidth();
-	// }
-	//
-	// setCanvasWidth(width);
-	// }
-	// if (uidl.hasAttribute("height")) {
-	// final String heightString = uidl.getStringAttribute("height");
-	// height = Integer.parseInt(heightString.substring(0,
-	// heightString.indexOf("px")));
-	//
-	// // Percentual height
-	// if (uidl.hasAttribute("heightpercentage")) {
-	// height = getElement().getParentElement().getClientHeight();
-	// }
-	//
-	// setCanvasHeight(height);
-	// }
-
-	// if (uidl.hasAttribute("allOnLeft")) {
-	// if (!onlyLeft) {
-	// groups.clear();
-	// }
-	// onlyLeft = true;
-	// } else {
-	// if (onlyLeft) {
-	// groups.clear();
-	// }
-	// onlyLeft = false;
-	// }
-
-	// if (uidl.hasAttribute("enableDrag")) {
-	// enableDragging = true;
-	// } else {
-	// enableDragging = false;
-	// }
-
-	// if (uidl.hasAttribute("boxWidth")) {
-	// BOX_WIDTH = uidl.getIntAttribute("boxWidth");
-	// paint.setBoxWidth(BOX_WIDTH);
-	// }
-	//
-	// boolean newData = false;
-	// if (uidl.hasAttribute("data")) {
-	// final ValueMap map = uidl.getMapAttribute("data");
-	//
-	// for (final VGroup group : groups) {
-	// if (!map.getKeySet().contains(group.getId()) && !newData) {
-	// newData = true;
-	// break;
-	// }
-	// }
-	// if (groups.isEmpty() || uidl.hasAttribute("resetPositions")) {
-	// newData = true;
-	// }
-	//
-	// if (newData) {
-	// groups.clear();
-	// }
-	//
-	// for (final String req2 : map.getKeySet()) {
-	// final VGroup group = getGroup(req2);
-	//
-	// final String[] persons = map.getString(req2).split(";");
-	//
-	// for (final String s : persons) {
-	// final String[] personData = s.split("_");
-	// final VPerson person = new VPerson(Long.parseLong(personData[0]),
-	// personData[1], Integer.parseInt(personData[2]));
-	// group.addName(person);
-	// }
-	// }
-	// Collections.sort(groups, new Comparator<VGroup>() {
-	// @Override
-	// public int compare(final VGroup o1, final VGroup o2) {
-	// return o1.getNumber() == o2.getNumber() ? 0 : o1.getNumber() <
-	// o2.getNumber() ? -1 : 1;
-	// }
-	// });
-	//
-	// }
-	// }
-
-	// TODO: updating and adding groups rutine!!!
 	public void checkGroups(final Map<String, List<Competitor>> competitorsByGroup) {
 		boolean newData = false;
 		for (final VGroup group : groups) {
@@ -234,8 +128,6 @@ public class VKnockoutChart extends Widget {
 			final List<Competitor> persons = competitorsByGroup.get(req2);
 
 			for (final Competitor person : persons) {
-				// final VPerson person = new VPerson(s.getId(), s.getName(),
-				// s.advancedTo());
 				group.addName(person);
 			}
 		}
@@ -749,9 +641,7 @@ public class VKnockoutChart extends Widget {
 				mouseDown = false;
 				final int x = event.getClientX() - getAbsoluteLeft();
 				final int y = event.getClientY() - getAbsoluteTop();
-				VConsole.log(x + "," + y + " " + drawnGroups.size());
 				for (final VGroup group : drawnGroups) {
-					VConsole.log("L: " + group.getLeftSide() + " T: " + group.getTop() + " B: " + group.getBottom());
 					if (group.getLeftSide() < x && x < group.getLeftSide() + BOX_WIDTH && group.getTop() < y && y < group.getBottom()) {
 						try {
 							final Competitor person = group.getNames().get((int) (y - group.getTop()) / 20);
@@ -802,9 +692,7 @@ public class VKnockoutChart extends Widget {
 	}
 
 	public void valueSelect(final long value) {
-		VConsole.log(" --- Select event for " + value);
 		fireEvent(new SelectionEvent(value));
-		// client.updateVariable(paintableId, "selected", value, true);
 	}
 
 	public HandlerRegistration addSelectionEventHandler(final SelectionEventHandler selectionEventHandler) {
