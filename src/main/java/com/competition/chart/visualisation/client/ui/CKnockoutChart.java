@@ -48,7 +48,7 @@ public class CKnockoutChart extends Widget {
 
 	private boolean mouseDown = false;
 	private boolean mouseMoved = false;
-	private boolean enableDragging = false;
+	private boolean enableDragging = true;
 
 	private final int width = 0;
 	private final int height = 0;
