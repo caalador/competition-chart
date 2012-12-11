@@ -20,7 +20,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.VConsole;
 
-public class VKnockoutChart extends Widget {
+public class CKnockoutChart extends Widget {
 
 	/** Set the CSS class name to allow styling. */
 	public static final String CLASSNAME = "v-sportchart";
@@ -32,15 +32,15 @@ public class VKnockoutChart extends Widget {
 
 	private final Canvas canvas;
 
-	private final VPaintGroup paint;
+	private final CPaintGroup paint;
 
-	private final List<VGroup> groups = new LinkedList<VGroup>();
-	private VGroup finalBout, winner;
+	private final List<CGroup> groups = new LinkedList<CGroup>();
+	private CGroup finalBout, winner;
 	private int onLeft, onRight;
 
 	private int offsetLeft = 15;
 
-	private final List<VGroup> drawnGroups = new LinkedList<VGroup>();
+	private final List<CGroup> drawnGroups = new LinkedList<CGroup>();
 	private boolean onlyLeft = false;
 
 	public static int BOX_WIDTH = 150;
@@ -56,7 +56,7 @@ public class VKnockoutChart extends Widget {
 	 * The constructor should first call super() to initialize the component and
 	 * then handle any initialization relevant to Vaadin.
 	 */
-	public VKnockoutChart() {
+	public CKnockoutChart() {
 		setElement(Document.get().createDivElement());
 		setWidth("100%");
 		setHeight("100%");
@@ -78,7 +78,7 @@ public class VKnockoutChart extends Widget {
 		}
 		sinkEvents(Event.MOUSEEVENTS);
 
-		paint = new VPaintGroup(canvas);
+		paint = new CPaintGroup(canvas);
 	}
 
 	public void resetPositions() {
@@ -109,7 +109,7 @@ public class VKnockoutChart extends Widget {
 
 	public void checkGroups(final Map<String, List<Competitor>> competitorsByGroup) {
 		boolean newData = false;
-		for (final VGroup group : groups) {
+		for (final CGroup group : groups) {
 			if (!competitorsByGroup.keySet().contains(group.getId()) && !newData) {
 				newData = true;
 				break;
@@ -123,7 +123,7 @@ public class VKnockoutChart extends Widget {
 		}
 
 		for (final String req2 : competitorsByGroup.keySet()) {
-			final VGroup group = getGroup(req2);
+			final CGroup group = getGroup(req2);
 
 			final List<Competitor> persons = competitorsByGroup.get(req2);
 
@@ -131,9 +131,9 @@ public class VKnockoutChart extends Widget {
 				group.addName(person);
 			}
 		}
-		Collections.sort(groups, new Comparator<VGroup>() {
+		Collections.sort(groups, new Comparator<CGroup>() {
 			@Override
-			public int compare(final VGroup o1, final VGroup o2) {
+			public int compare(final CGroup o1, final CGroup o2) {
 				return o1.getNumber() == o2.getNumber() ? 0 : o1.getNumber() < o2.getNumber() ? -1 : 1;
 			}
 		});
@@ -169,14 +169,14 @@ public class VKnockoutChart extends Widget {
 	 * @param id
 	 * @return
 	 */
-	private VGroup getGroup(final String id) {
-		for (final VGroup g : groups) {
+	private CGroup getGroup(final String id) {
+		for (final CGroup g : groups) {
 			if (g.getId().equals(id)) {
 				return g;
 			}
 		}
 
-		final VGroup group = new VGroup(id);
+		final CGroup group = new CGroup(id);
 		groups.add(group);
 
 		return group;
@@ -189,7 +189,7 @@ public class VKnockoutChart extends Widget {
 		onRight = groups.size() - onLeft;
 
 		for (int i = 0; i < groups.size(); i++) {
-			final VGroup group = groups.get(i);
+			final CGroup group = groups.get(i);
 			if (i == onLeft) {
 				if (onLeft > onRight) {
 					top = 25 + getLeftRightDifference();
@@ -233,7 +233,7 @@ public class VKnockoutChart extends Widget {
 		float top = 35;
 
 		for (int i = 0; i < groups.size(); i++) {
-			final VGroup group = groups.get(i);
+			final CGroup group = groups.get(i);
 			if (calculateTop) {
 				top = group.calculatePosition(top);
 			}
@@ -246,15 +246,15 @@ public class VKnockoutChart extends Widget {
 		int n = groups.size();
 		int tier = 1;
 		int parent = 0;
-		VGroup lastChild = groups.get(0);
-		List<VGroup> targetGroup = groups;
-		List<VGroup> childGroup = new LinkedList<VGroup>();
+		CGroup lastChild = groups.get(0);
+		List<CGroup> targetGroup = groups;
+		List<CGroup> childGroup = new LinkedList<CGroup>();
 
 		while (n > 1) {
 			offsetLeft += BOX_WIDTH + 30;
 			n = n / 2 + n % 2;
 			for (int i = 0; i < n; i++) {
-				final VGroup child = new VGroup(nextID + "_ _" + tier);
+				final CGroup child = new CGroup(nextID + "_ _" + tier);
 				targetGroup.get(parent).setChildGroup(child);
 				addAdvanced(child, targetGroup.get(parent).getNames());
 				child.addParent(targetGroup.get(parent++));
@@ -270,13 +270,13 @@ public class VKnockoutChart extends Widget {
 				nextID++;
 			}
 			targetGroup = childGroup;
-			childGroup = new LinkedList<VGroup>();
+			childGroup = new LinkedList<CGroup>();
 			parent = 0;
 			tier++;
 		}
 		if (n == 1) {
 			offsetLeft += BOX_WIDTH + 20;
-			finalBout = new VGroup(nextID + "_ _" + tier);
+			finalBout = new CGroup(nextID + "_ _" + tier);
 			lastChild.setChildGroup(finalBout);
 			finalBout.addParent(lastChild);
 			addAdvanced(finalBout, lastChild.getNames());
@@ -292,15 +292,15 @@ public class VKnockoutChart extends Widget {
 		int maxTier = 1;
 		int tier = 1;
 		int parent = 0;
-		VGroup lastChild = groups.get(0);
-		List<VGroup> targetGroup = groups;
-		List<VGroup> childGroup = new LinkedList<VGroup>();
+		CGroup lastChild = groups.get(0);
+		List<CGroup> targetGroup = groups;
+		List<CGroup> childGroup = new LinkedList<CGroup>();
 
 		while (n > 1) {
 			offsetLeft += BOX_WIDTH + 30;
 			n = n / 2 + n % 2;
 			for (int i = 0; i < n; i++) {
-				final VGroup child = new VGroup(nextID + "_ _" + tier);
+				final CGroup child = new CGroup(nextID + "_ _" + tier);
 				targetGroup.get(parent).setChildGroup(child);
 				addAdvanced(child, targetGroup.get(parent).getNames());
 				child.addParent(targetGroup.get(parent++));
@@ -316,13 +316,13 @@ public class VKnockoutChart extends Widget {
 				nextID++;
 			}
 			targetGroup = childGroup;
-			childGroup = new LinkedList<VGroup>();
+			childGroup = new LinkedList<CGroup>();
 			parent = 0;
 			tier++;
 		}
 		if (n == 1) {
 			offsetLeft += BOX_WIDTH + 20;
-			finalBout = new VGroup(nextID + "_ _" + tier);
+			finalBout = new CGroup(nextID + "_ _" + tier);
 			lastChild.setChildGroup(finalBout);
 			finalBout.addParent(lastChild);
 			addAdvanced(finalBout, lastChild.getNames());
@@ -340,7 +340,7 @@ public class VKnockoutChart extends Widget {
 		parent = onLeft;
 		tier = 1;
 		targetGroup = groups;
-		childGroup = new LinkedList<VGroup>();
+		childGroup = new LinkedList<CGroup>();
 		for (int i = parent; i < groups.size(); i++) {
 			targetGroup.get(i).setLeftSide(offsetLeft);
 		}
@@ -349,7 +349,7 @@ public class VKnockoutChart extends Widget {
 			offsetLeft -= BOX_WIDTH + 30;
 			n = n / 2 + n % 2;
 			for (int i = 0; i < n; i++) {
-				final VGroup child = new VGroup(nextID + "_ _" + tier);
+				final CGroup child = new CGroup(nextID + "_ _" + tier);
 				targetGroup.get(parent).setChildGroup(child);
 				addAdvanced(child, targetGroup.get(parent).getNames());
 				child.addParent(targetGroup.get(parent++));
@@ -365,7 +365,7 @@ public class VKnockoutChart extends Widget {
 				nextID++;
 			}
 			targetGroup = childGroup;
-			childGroup = new LinkedList<VGroup>();
+			childGroup = new LinkedList<CGroup>();
 			parent = 0;
 			tier++;
 		}
@@ -385,7 +385,7 @@ public class VKnockoutChart extends Widget {
 		// }
 		if (n == 1 || onRight == 1) {
 			if (onRight == 1) {
-				final VGroup parentGroup = groups.get(parent);
+				final CGroup parentGroup = groups.get(parent);
 				parentGroup.setChildGroup(finalBout);
 				finalBout.addParent(parentGroup);
 				addAdvanced(finalBout, parentGroup.getNames());
@@ -396,17 +396,17 @@ public class VKnockoutChart extends Widget {
 			}
 		}
 		if (hasAdvance(finalBout.getNames(), maxTier + 1)) {
-			winner = new VGroup("99_ _" + (maxTier + 1));
+			winner = new CGroup("99_ _" + (maxTier + 1));
 			addAdvanced(winner, finalBout.getNames());
 		}
 		fillGroup(finalBout);
 	}
 
 	private void calculateChildPositions() {
-		final List<VGroup> allGroups = new LinkedList<VGroup>();
+		final List<CGroup> allGroups = new LinkedList<CGroup>();
 
-		for (final VGroup group : groups) {
-			VGroup child = group;
+		for (final CGroup group : groups) {
+			CGroup child = group;
 			while (child.getChildGroup() != null) {
 				child = child.getChildGroup();
 				if (!allGroups.contains(child)) {
@@ -423,12 +423,12 @@ public class VKnockoutChart extends Widget {
 
 	}
 
-	private boolean calculatePosition(final List<VGroup> allGroups) {
-		final List<VGroup> remove = new ArrayList<VGroup>();
+	private boolean calculatePosition(final List<CGroup> allGroups) {
+		final List<CGroup> remove = new ArrayList<CGroup>();
 
-		for (final VGroup group : allGroups) {
+		for (final CGroup group : allGroups) {
 			boolean allParentsHavePosition = true;
-			for (final VGroup parent : group.getParents()) {
+			for (final CGroup parent : group.getParents()) {
 				if (!parent.hasPosition()) {
 					allParentsHavePosition = false;
 				}
@@ -436,7 +436,7 @@ public class VKnockoutChart extends Widget {
 			if (allParentsHavePosition) {
 				float bottom = Float.MAX_VALUE;
 				float top = 0;
-				for (final VGroup parent : group.getParents()) {
+				for (final CGroup parent : group.getParents()) {
 					if (parent.getBottom() < bottom) {
 						bottom = parent.getBottom();
 					}
@@ -465,7 +465,7 @@ public class VKnockoutChart extends Widget {
 		canvas.getContext2d().clearRect(0.0, 0.0, canvas.getCoordinateSpaceWidth(), canvas.getCoordinateSpaceWidth());
 
 		for (int j = 0; j < onLeft; j++) {
-			final VGroup group = groups.get(j);
+			final CGroup group = groups.get(j);
 			paint.left(group);
 			drawnGroups.add(group);
 			drawChild(group.getChildGroup());
@@ -478,7 +478,7 @@ public class VKnockoutChart extends Widget {
 
 		canvas.getContext2d().clearRect(0.0, 0.0, canvas.getCoordinateSpaceWidth(), canvas.getCoordinateSpaceWidth());
 
-		for (final VGroup group : groups) {
+		for (final CGroup group : groups) {
 			paint.left(group);
 			drawnGroups.add(group);
 			if (group.getChildGroup() != null) {
@@ -489,7 +489,7 @@ public class VKnockoutChart extends Widget {
 
 	Map<Integer, Boolean> drawTier = new HashMap<Integer, Boolean>();
 
-	private void drawChild(final VGroup childGroup) {
+	private void drawChild(final CGroup childGroup) {
 		if (drawnGroups.contains(childGroup)) {
 			return;
 		}
@@ -509,9 +509,9 @@ public class VKnockoutChart extends Widget {
 		}
 	}
 
-	private void drawParent(final VGroup childGroup) {
+	private void drawParent(final CGroup childGroup) {
 		offsetLeft += 30;
-		for (final VGroup parent : childGroup.getParents()) {
+		for (final CGroup parent : childGroup.getParents()) {
 
 			if (!drawnGroups.contains(parent)) {
 				if (childGroup.getParents().size() == 2 && childGroup != finalBout) {
@@ -538,7 +538,7 @@ public class VKnockoutChart extends Widget {
 		return false;
 	}
 
-	private void addAdvanced(final VGroup child, final List<Competitor> persons) {
+	private void addAdvanced(final CGroup child, final List<Competitor> persons) {
 		for (final Competitor p : persons) {
 			if (p.advancedTo() >= child.getTier()) {
 				child.addName(p);
@@ -546,7 +546,7 @@ public class VKnockoutChart extends Widget {
 		}
 	}
 
-	private void fillGroup(final VGroup group) {
+	private void fillGroup(final CGroup group) {
 		if (group.getNames().isEmpty()) {
 			group.addName(new Competitor(-1, "", 0));
 		}
@@ -625,7 +625,7 @@ public class VKnockoutChart extends Widget {
 
 			xDown = event.getClientX();
 			yDown = event.getClientY();
-			for (final VGroup group : drawnGroups) {
+			for (final CGroup group : drawnGroups) {
 				group.updatePosition(yChange);
 				group.setLeftSide(group.getLeftSide() + xChange);
 			}
@@ -641,7 +641,7 @@ public class VKnockoutChart extends Widget {
 				mouseDown = false;
 				final int x = event.getClientX() - getAbsoluteLeft();
 				final int y = event.getClientY() - getAbsoluteTop();
-				for (final VGroup group : drawnGroups) {
+				for (final CGroup group : drawnGroups) {
 					if (group.getLeftSide() < x && x < group.getLeftSide() + BOX_WIDTH && group.getTop() < y && y < group.getBottom()) {
 						try {
 							final Competitor person = group.getNames().get((int) (y - group.getTop()) / 20);
@@ -673,7 +673,7 @@ public class VKnockoutChart extends Widget {
 			xDown = touch.getPageX();
 			yDown = touch.getPageY();
 
-			for (final VGroup group : drawnGroups) {
+			for (final CGroup group : drawnGroups) {
 				group.updatePosition(yChange);
 				group.setLeftSide(group.getLeftSide() + xChange);
 			}
