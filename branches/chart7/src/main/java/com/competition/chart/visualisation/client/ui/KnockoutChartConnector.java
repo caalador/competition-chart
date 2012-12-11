@@ -30,11 +30,24 @@ public class KnockoutChartConnector extends AbstractComponentConnector implement
 			@Override
 			public void resetPositions() {
 				getWidget().resetPositions();
+				getWidget().checkGroups(getState().competitorsByGroup);
 			}
 
 			@Override
 			public void setNameBoxWidth(final int boxWidth) {
 				CKnockoutChart.setBoxWidth(boxWidth);
+			}
+
+			@Override
+			public void setLeftOnly(final boolean leftOnly) {
+				getWidget().allOnLeft(leftOnly);
+				getWidget().checkGroups(getState().competitorsByGroup);
+			}
+
+			@Override
+			public void setPanEnabled(final boolean enabled) {
+				getWidget().setEnableDragging(enabled);
+				getWidget().checkGroups(getState().competitorsByGroup);
 			}
 		});
 	}
@@ -61,19 +74,6 @@ public class KnockoutChartConnector extends AbstractComponentConnector implement
 
 		getWidget().setCanvasWidth(getState().canvasWidth);
 		getWidget().setCanvasHeight(getState().canvasHeight);
-
-		if (changed.contains("pan")) {
-			getWidget().setEnableDragging(getState().pan);
-			if (!changed.contains("competitorsByGroup")) {
-				getWidget().checkGroups(getState().competitorsByGroup);
-			}
-		}
-		if (changed.contains("allOnLeft")) {
-			getWidget().allOnLeft(getState().allOnLeft);
-			if (!changed.contains("competitorsByGroup")) {
-				getWidget().checkGroups(getState().competitorsByGroup);
-			}
-		}
 
 		if (changed.contains("competitorsByGroup")) {
 			getWidget().checkGroups(getState().competitorsByGroup);

@@ -27,7 +27,7 @@ public class KnockoutChart extends AbstractComponent {
 
 	private final Map<String, List<Competitor>> data = new HashMap<String, List<Competitor>>();
 	private boolean left = false;
-	private boolean enableDrag = false;
+	private boolean enableDrag = true;
 	private int boxWidth;
 
 	KnockoutChartServerRpc rpc = new KnockoutChartServerRpc() {
@@ -84,12 +84,16 @@ public class KnockoutChart extends AbstractComponent {
 		} else {
 			left = false;
 		}
-		getState().allOnLeft = left;
+		getRpcProxy(KnockoutChartClientRpc.class).setLeftOnly(left);
 	}
 
 	public void setPanningEnabled(final boolean panning) {
 		enableDrag = panning;
-		getState().pan = panning;
+		getRpcProxy(KnockoutChartClientRpc.class).setPanEnabled(panning);
+	}
+
+	public boolean getPanningEnabled() {
+		return enableDrag;
 	}
 
 	public void setNameBoxWidth(final int boxWidth) {
