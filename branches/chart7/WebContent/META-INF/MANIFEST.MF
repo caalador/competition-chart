@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Implementation-Title: competition-chart
-Implementation-Version: 2.0.0
+Implementation-Version: 2.0.1
 Vaadin-Package-Version: 1
-Vaadin-Widgetsets: com.competition.chart.visualisation.ChartWidgetset
 Class-Path: 
+Vaadin-Widgetsets: com.competition.chart.visualisation.ChartWidgetset
 

@@ -1,7 +1,10 @@
 package com.competition.chart.visualisation.client;
 
+import java.io.Serializable;
 
-public class Competitor {
+public class Competitor implements Serializable {
+
+	private static final long serialVersionUID = -2993088727163126488L;
 
 	private long id;
 	private String name;
