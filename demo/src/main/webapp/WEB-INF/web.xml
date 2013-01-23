@@ -17,7 +17,7 @@
                 <init-param>
             <description>Application widgetset</description>
             <param-name>widgetset</param-name>
-            <param-value>com.competition.chart.demo.ChartDemoWidgetset</param-value>
+            <param-value>com.competition.chart.demo.widgetset.ChartDemoWidgetset</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
