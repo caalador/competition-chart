@@ -1,0 +1,5 @@
+.idea
+*.iml
+Competition-chart-addon/target
+*.cache
+Competition-chart-demo/target
