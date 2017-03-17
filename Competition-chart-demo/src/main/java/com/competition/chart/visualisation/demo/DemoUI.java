@@ -103,7 +103,7 @@ public class DemoUI extends UI {
         knockoutChart.addListener(vcl);
 
         final CheckBox left = new CheckBox("all on left");
-        left.addListener(event -> {
+        left.addValueChangeListener(event -> {
             if (left.getValue()) {
                 knockoutChart.setChartMode(
                         KnockoutChart.VisualisationMode.LEFT_ONLY);
@@ -111,37 +111,12 @@ public class DemoUI extends UI {
                 knockoutChart.setChartMode(
                         KnockoutChart.VisualisationMode.LEFT_RIGHT);
             }
-            knockoutChart.requestRepaint();
         });
-        // new ValueChangeListener() {
-        // private static final long serialVersionUID = -347103891605131202L;
-        //
-        // @Override
-        // public void valueChange(final ValueChangeEvent event) {
-        // if (left.booleanValue()) {
-        // knockoutChart.setChartMode(KnockoutChart.VisualisationMode.LEFT_ONLY);
-        // } else {
-        // knockoutChart.setChartMode(KnockoutChart.VisualisationMode.LEFT_RIGHT);
-        // }
-        // knockoutChart.requestRepaint();
-        // }
-        // });
         final CheckBox pan = new CheckBox("Panning enabled");
         pan.setValue(true);
-        // pan.setImmediate(true);
-        pan.addListener(event -> {
+        pan.addValueChangeListener(event -> {
             knockoutChart.setPanningEnabled(pan.getValue());
-            knockoutChart.requestRepaint();
         });
-        // new ValueChangeListener() {
-        // private static final long serialVersionUID = -347103891605131202L;
-        //
-        // @Override
-        // public void valueChange(final ValueChangeEvent event) {
-        // knockoutChart.setPanningEnabled(pan.booleanValue());
-        // knockoutChart.requestRepaint();
-        // }
-        // });
         final Button reset = new Button("Reset position",
                 new Button.ClickListener() {
                     private static final long serialVersionUID = -4090369163773691780L;
