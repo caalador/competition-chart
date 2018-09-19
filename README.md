@@ -1,3 +1,6 @@
+[![Published on Vaadin  Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0.svg)](https://vaadin.com/directory/component/competition-chart)
+[![Stars on Vaadin Directory](https://img.shields.io/vaadin-directory/star/competition-chart.svg)](https://vaadin.com/directory/component/competition-chart)
+
 # Competition chart Add-on for Vaadin 8
 
 ${ComponentClassName} is a UI component add-on for Vaadin 8.
